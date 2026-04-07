@@ -1,0 +1,83 @@
+"""Collect and repackage project metadata."""
+import argparse
+import datetime
+import gzip
+import hashlib
+import json
+import logging
+import os
+import shutil
+import tomllib
+
+import requests
+
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+DEFAULT_PLUGINS_FILE = os.path.join(
+    os.path.dirname(__file__), '..', 'plugins.txt')
+
+
+def _hashfile(filepath):
+    sha = hashlib.sha256()
+    with open(filepath, 'rb') as opened_file:
+        while True:
+            data = opened_file.read(512)
+            if not data:
+                break
+            sha.update(data)
+    return sha.hexdigest()
+
+
+def main(args=None):
+    parser = argparse.ArgumentParser("collect-metadata.py")
+    parser.add_argument('pluginslist', default=DEFAULT_PLUGINS_FILE)
+
+    parsed_args = parser.parse_args(args)
+
+    all_toml_data = {}  # name: loaded_toml
+    with open(parsed_args.pluginslist, 'r') as plugins_list:
+        for line in plugins_list:
+            plugin_git_url = line.strip()
+            LOGGER.info(f"Processing {plugin_git_url}")
+
+            user, repo = plugin_git_url.replace(
+                'https://github.com/', '').replace('.git', '').split('/')
+
+            pyproject_url = (
+                f'https://raw.githubusercontent.com/{user}/{repo}'
+                '/refs/heads/main/pyproject.toml')
+            LOGGER.debug(f"Getting toml {pyproject_url}")
+
+            resp = requests.get(pyproject_url)
+            pyproject_toml = tomllib.loads(resp.text)
+            project_name = pyproject_toml['project']['name']
+
+            all_toml_data[project_name] = pyproject_toml
+
+    metadata_object = {
+        'data': all_toml_data,
+        'generated_timestamp': datetime.datetime.today().isoformat(),
+        'schema_version': 0,  # in case we need a new version of this
+    }
+
+    metadata_json_path = 'metadata.json'
+    LOGGER.info(f"Writing {metadata_json_path}")
+    with open(metadata_json_path, 'w') as metadata_json_file:
+        json.dump(metadata_object, metadata_json_file)
+
+    LOGGER.info(f"Writing {metadata_json_path}.sha256")
+    with open(f'{metadata_json_path}.sha256', 'w') as metadata_sha256:
+        metadata_sha256.write(_hashfile(metadata_json_path))
+
+    LOGGER.info(f'Writing {metadata_json_path}.gz')
+    with open(metadata_json_path, 'rb') as metadata_in:
+        with gzip.open(f'{metadata_json_path}.gz', 'wb') as metadata_out:
+            shutil.copyfileobj(metadata_in, metadata_out)
+
+    LOGGER.info(f'Writing {metadata_json_path}.gz.sha256')
+    with open(f'{metadata_json_path}.gz.sha256', 'w') as metadata_sha256:
+        metadata_sha256.write(_hashfile(f'{metadata_json_path}.gz'))
+
+
+if __name__ == '__main__':
+    main()
