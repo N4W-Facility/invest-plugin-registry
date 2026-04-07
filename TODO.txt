@@ -1,0 +1,3 @@
+(A) is it important to create some kind of security scanning?
+(A) How will releases be handled, if at all?
+
