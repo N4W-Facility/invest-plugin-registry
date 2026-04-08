@@ -1,7 +1,7 @@
 """Collect and repackage project metadata."""
 import argparse
+import bz2
 import datetime
-import gzip
 import hashlib
 import json
 import logging
@@ -76,14 +76,14 @@ def main(args=None):
     with open(f'{metadata_json_path}.sha256', 'w') as metadata_sha256:
         metadata_sha256.write(_hashfile(metadata_json_path))
 
-    LOGGER.info(f'Writing {metadata_json_path}.gz')
+    LOGGER.info(f'Writing {metadata_json_path}.bz2')
     with open(metadata_json_path, 'rb') as metadata_in:
-        with gzip.open(f'{metadata_json_path}.gz', 'wb') as metadata_out:
+        with bz2.open(f'{metadata_json_path}.bz2', 'wb') as metadata_out:
             shutil.copyfileobj(metadata_in, metadata_out)
 
-    LOGGER.info(f'Writing {metadata_json_path}.gz.sha256')
-    with open(f'{metadata_json_path}.gz.sha256', 'w') as metadata_sha256:
-        metadata_sha256.write(_hashfile(f'{metadata_json_path}.gz'))
+    LOGGER.info(f'Writing {metadata_json_path}.bz2.sha256')
+    with open(f'{metadata_json_path}.bz2.sha256', 'w') as metadata_sha256:
+        metadata_sha256.write(_hashfile(f'{metadata_json_path}.bz2'))
 
 
 if __name__ == '__main__':
