@@ -13,8 +13,9 @@ import requests
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-DEFAULT_PLUGINS_FILE = os.path.join(
-    os.path.dirname(__file__), '..', 'plugins.txt')
+REPO_ROOT = os.path.join(os.path.dirname(__file__), '..')
+DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.txt')
+DEFAULT_OUTDIR = os.path.join(REPO_ROOT, 'html')
 
 
 def _hashfile(filepath):
@@ -30,9 +31,15 @@ def _hashfile(filepath):
 
 def main(args=None):
     parser = argparse.ArgumentParser("collect-metadata.py")
-    parser.add_argument('pluginslist', default=DEFAULT_PLUGINS_FILE)
+    parser.add_argument('--pluginslist', default=DEFAULT_PLUGINS_FILE,
+                        required=False)
+    parser.add_argument('--outdir', default=DEFAULT_OUTDIR, required=False)
 
     parsed_args = parser.parse_args(args)
+
+    outdir = os.path.normpath(parsed_args.outdir)
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
 
     all_toml_data = {}  # name: loaded_toml
     with open(parsed_args.pluginslist, 'r') as plugins_list:
@@ -60,7 +67,7 @@ def main(args=None):
         'schema_version': 0,  # in case we need a new version of this
     }
 
-    metadata_json_path = 'metadata.json'
+    metadata_json_path = os.path.join(outdir, 'metadata.json')
     LOGGER.info(f"Writing {metadata_json_path}")
     with open(metadata_json_path, 'w') as metadata_json_file:
         json.dump(metadata_object, metadata_json_file)
