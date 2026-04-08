@@ -76,6 +76,9 @@ def main(args=None):
     with open(f'{metadata_json_path}.sha256', 'w') as metadata_sha256:
         metadata_sha256.write(_hashfile(metadata_json_path))
 
+    # Using bzip2 here because that's what conda-forge uses and seems
+    # reasonable.  Not sure if it's strictly necessary if the github pages
+    # webserver already has gzip compression enabled.
     LOGGER.info(f'Writing {metadata_json_path}.bz2')
     with open(metadata_json_path, 'rb') as metadata_in:
         with bz2.open(f'{metadata_json_path}.bz2', 'wb') as metadata_out:
