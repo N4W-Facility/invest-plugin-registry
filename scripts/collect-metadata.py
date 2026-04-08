@@ -18,6 +18,7 @@ DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.txt')
 DEFAULT_OUTDIR = os.path.join(REPO_ROOT, 'html')
 
 
+
 def _hashfile(filepath):
     sha = hashlib.sha256()
     with open(filepath, 'rb') as opened_file:
@@ -27,6 +28,13 @@ def _hashfile(filepath):
                 break
             sha.update(data)
     return sha.hexdigest()
+
+
+def _latest_commit_info(owner, repo):
+    resp = requests.get(
+        f'https://api.github.com/repos/{owner}/{repo}/commits/HEAD')
+    resp.raise_for_status()
+    return resp.json()
 
 
 def main(args=None):
@@ -59,7 +67,14 @@ def main(args=None):
             pyproject_toml = tomllib.loads(resp.text)
             project_name = pyproject_toml['project']['name']
 
-            all_toml_data[project_name] = pyproject_toml
+            latest_commit_data = _latest_commit_info(user, repo)
+            all_toml_data[project_name] = {
+                'pyproject_toml': pyproject_toml,
+                'github_repo': plugin_git_url,
+                'current_commit_sha': latest_commit_data['sha'],
+                'date_last_updated': latest_commit_data[
+                    'commit']['author']['date'],
+            }
 
     metadata_object = {
         'data': all_toml_data,
