@@ -6,6 +6,6 @@ env:
 all: env
 	$(ENV)/bin/python scripts/collect-metadata.py
 	$(ENV)/bin/python scripts/convert-metadata-to-rst.py html/metadata.json source/plugins
-	make -C source html
+	SPHINXBUILD=$(shell pwd)/$(ENV)/bin/sphinx-build make -C source html
 	cp -r source/_build/html/* html
 
