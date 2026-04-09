@@ -78,7 +78,7 @@ def main(args=None):
 
     metadata_object = {
         'data': all_toml_data,
-        'generated_timestamp': datetime.datetime.today().isoformat(),
+        'generated': datetime.datetime.today().isoformat(),
         'schema_version': 0,  # in case we need a new version of this
     }
 
