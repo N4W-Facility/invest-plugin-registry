@@ -24,4 +24,23 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'furo'  # pip install furo
+html_title = "InVEST Plugin Registry"
 html_static_path = ['_static']
+html_theme_options = {
+    'light_logo': 'alliance-logo-full-color.png',
+    'dark_logo': 'alliance-logo-full-white.png',
+    'light_css_variables': {
+        'color-brand-primary': '#175e54',
+        'color-brand-content': '#2e2d29',
+        'color-admonition-background': '#f4795b',
+        'color-announcement-background': '#007c92',
+    },
+    'dark_css_variables': {
+        'color-brand-primary': '#B6B1A9',
+        'color-brand-content': '#F4F4F4',
+        'color-admonition-background': '#C74632',
+        'color-announcement-background': '#620059',
+    },
+    'sidebar_hide_name': True,  # don't show name in sidebar, only logo
+    'announcement': '<em>Hey, check out the <a href="https://naturalcapitalalliance.stanford.edu/node/4746">NatCap Symposium!</a></em>',
+}

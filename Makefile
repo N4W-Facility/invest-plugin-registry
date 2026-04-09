@@ -9,3 +9,7 @@ all: env
 	SPHINXBUILD=$(shell pwd)/$(ENV)/bin/sphinx-build make -C source html
 	cp -r source/_build/html/* html
 
+.PHONY: html
+html:
+	SPHINXBUILD=$(shell pwd)/$(ENV)/bin/sphinx-build make -C source html
+	cp -r source/_build/html/* html
