@@ -28,6 +28,21 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
             "*This project did not provide a description in its package "
             "configuration, defined in* ``pyproject.toml``.")
 
+    cf_dependencies_list = plugin_metadata[
+        'pyproject_toml']['tool']['natcap']['invest']['conda_dependencies']
+    if cf_dependencies_list:
+        condaforge_dependencies = "\n".join([" "*12 + dep for dep in cf_dependencies_list]).lstrip()
+    else:
+        condaforge_dependencies = "No conda-forge dependencies defined"
+
+    pypi_deps_list = plugin_metadata[
+        'pyproject_toml']['project']['dependencies']
+    if pypi_deps_list:
+        pypi_dependencies = "\n".join(
+            [" "*12 + dep for dep in pypi_deps_list]).lstrip()
+    else:
+        pypi_dependencies = "No PyPI dependencies defined"
+
     template = textwrap.dedent(
         f"""
         {project_name}
@@ -37,6 +52,18 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
 
         * Last updated: {plugin_metadata['date_last_updated']}
         * Source code: {plugin_metadata['github_repo']}
+
+        Dependencies
+        ------------
+
+        This plugin will pull these dependencies from PyPI::
+
+            {pypi_dependencies}
+
+        And these dependencies will be pulled from conda-forge::
+
+            {condaforge_dependencies}
+
         """)
 
     out_filename = os.path.join(out_dir, f'{plugin_name}.rst')
