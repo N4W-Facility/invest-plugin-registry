@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import textwrap
 
 logging.basicConfig(level=logging.INFO)
@@ -38,8 +39,22 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
     pypi_deps_list = plugin_metadata[
         'pyproject_toml']['project']['dependencies']
     if pypi_deps_list:
-        pypi_dependencies = "\n".join(
-            [" "*12 + dep for dep in pypi_deps_list]).lstrip()
+        # only list as pypi deps those packages that are not listed in conda
+        # deps
+        if '\n' in condaforge_dependencies:
+            cf_pkgs = set([re.findall('^\w+', dep)[0] for dep in
+                           cf_dependencies_list])
+            pypi_dependencies_list = []
+            for pypi_dep in pypi_deps_list:
+                pkg = re.findall('^\w+', pypi_dep)[0]
+                if pkg not in cf_pkgs:
+                    pypi_dependencies_list.append(pypi_dep)
+            pypi_dependencies = "\n".join(
+                [" "*12 + dep for dep in pypi_dependencies_list])
+        else:
+            pypi_dependencies = "\n".join(
+                [" "*12 + dep for dep in pypi_deps_list]).lstrip()
+
     else:
         pypi_dependencies = "No PyPI dependencies defined"
 
