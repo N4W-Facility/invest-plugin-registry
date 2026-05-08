@@ -3,7 +3,7 @@ name: "Render plugins site"
 on:
     push:
         branches:
-            - april2026-pose-workshop
+            - main
 
 jobs:
     build:
