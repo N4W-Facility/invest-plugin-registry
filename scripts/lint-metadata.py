@@ -41,10 +41,15 @@ def _validate_pyproject_file(filepath):
             natcap_requirement_errors.append(
                 f'project.data.{attribute} could not be loaded')
 
+    if natcap_requirement_errors:
+        return (
+            f"{filepath} was found to have validation errors:\n"
+            + "\n".join(f"* {issue}" for issue in natcap_requirement_errors))
+
     return None
 
 
-def _valdiate_project_json_file(filepath):
+def _validate_project_json_file(filepath):
     try:
         with open(filepath, 'r') as project_json:
             json_data = json.load(project_json)
@@ -90,7 +95,7 @@ def _valdiate_project_json_file(filepath):
 
     if issues:
         return (
-            f"{filepath} was found to have some formatting issues:"
+            f"{filepath} was found to have some formatting issues:\n"
             + "\n".join(f"* {issue}" for issue in issues))
     return None
 
@@ -98,6 +103,33 @@ def _valdiate_project_json_file(filepath):
 def main(args=None):
     parser = argparse.ArgumentParser(
         "lint-metadata.py", description=())
+    parser.add_argument('PYPROJECT_TOML_FILE', help="path to a pyproject.toml file")
+    parser.add_argument('PLUGIN_JSON_FILE',
+                        help="path to the plugin.json file")
+    parser.add_argument(
+        '--target-file',
+        default=None,
+        help=("Where output should be written. If not provided, output is "
+              "written to stdout"))
+
+    parsed_args = parser.parse_args(args)
+
+    # Restart the file so we can append to it later.
+    if parsed_args.target_file is not None:
+        with open(parsed_args.target_file, 'w') as target_file:
+            target_file.write()
+
+    def _write_to_file(possible_string):
+        if possible_string is None:
+            return
+        elif parsed_args.target_file is None:
+            print(possible_string)
+        else:
+            with open(parsed_args.target_file, 'a') as target_file:
+                target_file.write(possible_string)
+
+    _write_to_file(_validate_pyproject_file(parsed_args.pyproject_toml_file))
+    _write_to_file(_validate_project_json_file(parsed_args.plugin_json_file))
 
 
 if __name__ == '__main__':
