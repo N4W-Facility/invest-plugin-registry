@@ -39,13 +39,11 @@ html_theme_options = {
     'light_css_variables': {
         'color-brand-primary': '#175e54',
         'color-brand-content': '#2e2d29',
-        'color-admonition-background': '#f4795b',
         'color-announcement-background': '#007c92',
     },
     'dark_css_variables': {
         'color-brand-primary': '#B6B1A9',
         'color-brand-content': '#F4F4F4',
-        'color-admonition-background': '#C74632',
         'color-announcement-background': '#620059',
     },
     'sidebar_hide_name': True,  # don't show name in sidebar, only logo
