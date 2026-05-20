@@ -110,8 +110,8 @@ def main(args=None):
                 description_partial = f'{os.path.basename(description_outpath)}'
             else:
                 LOGGER.warning(
-                    "The description file {description_url} returned "
-                    "non-OK status code {resp.status_code}")
+                    f"The description file {description_url} returned "
+                    f"non-OK status code {resp.status_code}")
 
         commit_sha, tag_date = _version_info(host, org, repo, plugin_version)
         all_toml_data[project_name] = {

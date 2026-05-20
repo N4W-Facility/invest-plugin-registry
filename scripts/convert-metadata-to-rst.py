@@ -96,8 +96,8 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
     # since only one may be included
     maintainers = plugin_metadata['pyproject_toml']['project'].get('maintainers')
     authors = plugin_metadata['pyproject_toml']['project'].get('authors')
-    authors_str = maintainers_str = None
     if authors or maintainers:
+        authors_str = maintainers_str = None
         if maintainers:
             maintainers_str = "**Maintainers:** " + format_contact(maintainers)
         if authors:
