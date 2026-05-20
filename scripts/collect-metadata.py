@@ -79,7 +79,8 @@ def main(args=None):
         project_name = pyproject_toml['project']['name']
 
         description_partial = None
-        description_file = pyproject_toml['tool']['natcap']['invest'].get('description_file')
+        description_file = pyproject_toml['tool']['natcap']['invest'].get(
+                           'registry_description')
         if description_file:
             description_url = f"{base_url}/{description_file.strip('/')}"
             LOGGER.info(f"Getting description file {description_url}")
