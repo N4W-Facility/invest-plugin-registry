@@ -9,6 +9,31 @@ logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 
+PLUGIN_TYPES = {
+    "preprocessing": "Preprocessing",
+    "postprocessing": "Postprocessing",
+    "workflow": "Workflow",
+    "invest_model_variant": "InVEST Model Variant",
+    "new_model": "New Model",
+    "other": "Other"
+}
+
+
+def format_contact(contacts):
+    contacts_list = []
+    for contact in contacts:
+        name = contact.get('name')
+        email = contact.get('email')
+        if not name and not email:
+            pass
+        if name and email:
+            contacts_list.append(f"{name} ({email})")
+        else:
+            contacts_list.append(f"{name or email}")
+        contacts_str = "; ".join(contacts_list)
+    return contacts_str
+
+
 def render_rst_file(plugin_name, plugin_metadata, out_dir):
 
     try:
@@ -58,15 +83,68 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
     else:
         pypi_dependencies = "No PyPI dependencies defined"
 
-    template = textwrap.dedent(
+    repo_url = plugin_metadata['github_repo'].replace('.git', '')
+    issues_link = plugin_metadata['pyproject_toml']['project']['urls'].get(
+            'Issues', f"{repo_url}/issues")
+    docs_link = plugin_metadata['pyproject_toml']['project']['urls'].get(
+            'Documentation', repo_url)
+
+    # Template partial for authors / maintainers; construct separately
+    # since only one may be included
+    maintainers = plugin_metadata['pyproject_toml']['project'].get('maintainers')
+    authors = plugin_metadata['pyproject_toml']['project'].get('authors')
+    authors_str = maintainers_str = None
+    if authors or maintainers:
+        if maintainers:
+            maintainers_str = "**Maintainers:** " + format_contact(maintainers)
+        if authors:
+            authors_str = "**Authors:** " + format_contact(authors)
+
+        if authors and maintainers:
+            authors_maintainers = (
+                f"""
+                | {authors_str}
+                | {maintainers_str}
+                |
+                """)
+        else:
+            authors_maintainers = (
+                f"""
+                | {authors_str or maintainers_str}
+                |
+                """)
+    else:
+        authors_maintainers = (
+            f"""
+            |
+            """)
+
+    # Construct the template
+    template_start = (
         f"""
         {project_name}
         {'='*len(project_name)}
 
-        {project_description}
+        .. info-card::
 
-        * Last updated: {plugin_metadata['date_last_updated']}
-        * Source code: {plugin_metadata['github_repo']}
+            .. grid-item::
+                :columns: 12
+
+                | **Source Code:** {plugin_metadata['github_repo']}
+                | **Current Version:** {plugin_metadata['version']}
+                | **Last Updated:** {plugin_metadata['date_last_updated']}
+                |
+        """)
+
+    template_end = (
+        f"""
+                | `Documentation <{docs_link}>`_ :octicon:`link-external` | `Issue Tracker <{issues_link}>`_ :octicon:`link-external`
+                |
+
+                :tags-primary:`{PLUGIN_TYPES.get(plugin_metadata['plugin_type'], 'Unknown')}`
+                :tags-info:`{','.join(tag for tag in plugin_metadata['keywords'])}`
+
+        {project_description}
 
         Dependencies
         ------------
@@ -80,6 +158,8 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
             {condaforge_dependencies}
 
         """)
+
+    template = textwrap.dedent(template_start + authors_maintainers + template_end)
 
     out_filename = os.path.join(out_dir, f'{plugin_name}.rst')
     with open(out_filename, 'w') as out_file:

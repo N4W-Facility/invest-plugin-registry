@@ -14,7 +14,7 @@ import requests
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 REPO_ROOT = os.path.join(os.path.dirname(__file__), '..')
-DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.txt')
+DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.json')
 DEFAULT_OUTDIR = os.path.join(REPO_ROOT, 'html')
 
 
@@ -30,9 +30,12 @@ def _hashfile(filepath):
     return sha.hexdigest()
 
 
-def _latest_commit_info(owner, repo):
+def _version_info(owner, repo, version):
     resp = requests.get(
-        f'https://api.github.com/repos/{owner}/{repo}/commits/HEAD')
+        f'https://api.github.com/repos/{owner}/{repo}/git/refs/tags/{version}')
+    resp.raise_for_status()
+    tag_json = resp.json()
+    resp = requests.get(tag_json['object']['url'])
     resp.raise_for_status()
     return resp.json()
 
@@ -51,29 +54,32 @@ def main(args=None):
 
     all_toml_data = {}  # name: loaded_toml
     with open(parsed_args.pluginslist, 'r') as plugins_list:
-        for line in plugins_list:
-            plugin_git_url = line.strip()
-            LOGGER.info(f"Processing {plugin_git_url}")
-
+        plugins_json = json.load(plugins_list)
+        for plugin in plugins_json:
+            plugin_git_url = plugin['repo_url'].strip()
+            plugin_version = plugin['version'].strip()
+            LOGGER.info(f"Processing {plugin_git_url}, version {plugin_version}")
             user, repo = plugin_git_url.replace(
                 'https://github.com/', '').replace('.git', '').split('/')
 
             pyproject_url = (
                 f'https://raw.githubusercontent.com/{user}/{repo}'
-                '/refs/heads/main/pyproject.toml')
+                f'/refs/tags/{plugin_version}/pyproject.toml')
             LOGGER.debug(f"Getting toml {pyproject_url}")
 
             resp = requests.get(pyproject_url)
             pyproject_toml = tomllib.loads(resp.text)
             project_name = pyproject_toml['project']['name']
 
-            latest_commit_data = _latest_commit_info(user, repo)
+            version_data = _version_info(user, repo, plugin_version)
             all_toml_data[project_name] = {
                 'pyproject_toml': pyproject_toml,
                 'github_repo': plugin_git_url,
-                'current_commit_sha': latest_commit_data['sha'],
-                'date_last_updated': latest_commit_data[
-                    'commit']['author']['date'],
+                'version': plugin_version,
+                'current_commit_sha': version_data['sha'],
+                'date_last_updated': version_data['author']['date'],
+                'plugin_type': plugin['plugin_type'],
+                'keywords': plugin['keywords']
             }
 
     metadata_object = {
