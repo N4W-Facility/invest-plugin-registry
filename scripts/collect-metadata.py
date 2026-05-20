@@ -17,6 +17,7 @@ REPO_ROOT = os.path.join(os.path.dirname(__file__), '..')
 DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.json')
 DEFAULT_OUTDIR = os.path.join(REPO_ROOT, 'html')
 
+DESCRIPTION_OUTDIR = os.path.join(REPO_ROOT, 'source', 'plugins', 'partials')
 
 
 def _hashfile(filepath):
@@ -52,35 +53,55 @@ def main(args=None):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
+    if not os.path.exists(DESCRIPTION_OUTDIR):
+        os.makedirs(DESCRIPTION_OUTDIR)
+
     all_toml_data = {}  # name: loaded_toml
     with open(parsed_args.pluginslist, 'r') as plugins_list:
         plugins_json = json.load(plugins_list)
-        for plugin in plugins_json:
-            plugin_git_url = plugin['repo_url'].strip()
-            plugin_version = plugin['version'].strip()
-            LOGGER.info(f"Processing {plugin_git_url}, version {plugin_version}")
-            user, repo = plugin_git_url.replace(
-                'https://github.com/', '').replace('.git', '').split('/')
 
-            pyproject_url = (
-                f'https://raw.githubusercontent.com/{user}/{repo}'
-                f'/refs/tags/{plugin_version}/pyproject.toml')
-            LOGGER.debug(f"Getting toml {pyproject_url}")
+    for plugin in plugins_json:
+        plugin_git_url = plugin['repo_url'].strip()
+        plugin_version = plugin['version'].strip()
+        LOGGER.info(f"Processing {plugin_git_url}, version {plugin_version}")
+        user, repo = plugin_git_url.replace(
+            'https://github.com/', '').replace('.git', '').split('/')
 
-            resp = requests.get(pyproject_url)
-            pyproject_toml = tomllib.loads(resp.text)
-            project_name = pyproject_toml['project']['name']
+        base_url = (
+            f'https://raw.githubusercontent.com/{user}/{repo}'
+            f'/refs/tags/{plugin_version}')
 
-            version_data = _version_info(user, repo, plugin_version)
-            all_toml_data[project_name] = {
-                'pyproject_toml': pyproject_toml,
-                'github_repo': plugin_git_url,
-                'version': plugin_version,
-                'current_commit_sha': version_data['sha'],
-                'date_last_updated': version_data['author']['date'],
-                'plugin_type': plugin['plugin_type'],
-                'keywords': plugin['keywords']
-            }
+        pyproject_url = f'{base_url}/pyproject.toml'
+        LOGGER.debug(f"Getting toml {pyproject_url}")
+
+        resp = requests.get(pyproject_url)
+        pyproject_toml = tomllib.loads(resp.text)
+        project_name = pyproject_toml['project']['name']
+
+        description_partial = None
+        description_file = pyproject_toml['tool']['natcap']['invest'].get('description_file')
+        if description_file:
+            description_url = f"{base_url}/{description_file.strip('/')}"
+            LOGGER.info(f"Getting description file {description_url}")
+            resp = requests.get(description_url)
+            if resp.ok:
+                description_outpath = os.path.join(DESCRIPTION_OUTDIR,
+                    f'{project_name}{os.path.splitext(description_url)[-1]}')
+                with open(description_outpath, 'w') as f:
+                    f.write(resp.text)
+                description_partial = f'{os.path.basename(description_outpath)}'
+
+        version_data = _version_info(user, repo, plugin_version)
+        all_toml_data[project_name] = {
+            'pyproject_toml': pyproject_toml,
+            'github_repo': plugin_git_url,
+            'version': plugin_version,
+            'current_commit_sha': version_data['sha'],
+            'date_last_updated': version_data['author']['date'],
+            'plugin_type': plugin['plugin_type'],
+            'keywords': plugin['keywords'],
+            'description_path': description_partial
+        }
 
     metadata_object = {
         'data': all_toml_data,

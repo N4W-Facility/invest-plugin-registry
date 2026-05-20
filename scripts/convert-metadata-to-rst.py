@@ -119,6 +119,24 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
             |
             """)
 
+    # Description handling
+    if plugin_metadata['description_path']:
+        if plugin_metadata['description_path'].lower().endswith(('md', 'txt')):
+            parser = 'myst'
+        else:
+            parser = 'rst'
+        description_partial = (f"""
+        .. include:: partials/{plugin_metadata['description_path']}
+           :parser: {parser}
+        """)
+    else:
+        description_partial = (f"""
+        About
+        -----
+
+        {project_description}
+        """)
+
     # Construct the template
     template_start = (
         f"""
@@ -144,7 +162,7 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
                 :tags-primary:`{PLUGIN_TYPES.get(plugin_metadata['plugin_type'], 'Unknown')}`
                 :tags-info:`{','.join(tag for tag in plugin_metadata['keywords'])}`
 
-        {project_description}
+        {description_partial}
 
         Dependencies
         ------------
