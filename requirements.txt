@@ -2,3 +2,4 @@ requests
 sphinx
 furo
 validate-pyproject
+myst-parser
