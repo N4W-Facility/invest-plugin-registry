@@ -105,25 +105,26 @@ The following keys are required for inclusion in the community plugin registry:
 * Optional, in the ``[tool.natcap.invest]`` section:
 
   * ``registry_description``: If you'd like to provide a longer description of your plugin
-    specifically for use on the Community Plugin Registry page, please include the key
-    ``registry_description`` in the ``[tool.natcap.invest]`` section and provide the link
-    to a file in your repo. If you don't include a description file link, the registry will
+    specifically for use on its Community Plugin Registry page, please include the key
+    ``registry_description`` in the ``[tool.natcap.invest]`` section and provide the path
+    to a file in your repo. If you don't include a description file, the registry will
     use the value of the description key in the ``[project]`` section instead.
 
-    * Supported file types: ``.md``, ``.rst``, and ``.txt`` 
+    * Supported file types: ``.md``, ``.rst``, and ``.txt``
+    * Note: This should be a file path relative to the root of your repo, **not** an HTTPS
+      URL!
 
 .. _readme_reqs:
 
 Recommended to include in your ``README``:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Your ``README`` should include a longer description of your plugin, including any details
-about its intended use (or limitations of its use). This is likely the first place a
-potential user of your plugin will look when deciding whether or not your plugin will
-suit their needs. As such, your plugin should have documentation that explains how to
-use it correctly to a potential user. You can include this in your ``README`` if you don't
-wish to host documentation elsewhere. If you do want to put your documentation somewhere
-else, you should link to it from your ``README``.
+Your ``README`` is likely the first place a potential user of your plugin will look when
+deciding whether or not your plugin will suit their needs. As such, your plugin should have
+documentation that explains how to use it correctly (and any limitations of its use) to a
+potential user. You can include this in your ``README`` if you don't wish to host
+documentation elsewhere. If you do want to put your documentation somewhere else, you
+should link to it from your ``README``.
 
 The ``README`` is also a good place to include any peer-reviewed paper(s) associated
 with your plugin, as well as any funding source(s) that contributed to its creation.
