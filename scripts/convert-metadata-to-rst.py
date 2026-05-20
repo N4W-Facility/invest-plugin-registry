@@ -30,7 +30,7 @@ def format_contact(contacts):
             contacts_list.append(f"{name} ({email})")
         else:
             contacts_list.append(f"{name or email}")
-        contacts_str = "; ".join(contacts_list)
+    contacts_str = "; ".join(contacts_list)
     return contacts_str
 
 
@@ -83,11 +83,14 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
     else:
         pypi_dependencies = "No PyPI dependencies defined"
 
-    repo_url = plugin_metadata['github_repo'].replace('.git', '')
+    repo_url = re.sub(r'\.git$', '', plugin_metadata['github_repo']).rstrip('/')
     issues_link = plugin_metadata['pyproject_toml']['project']['urls'].get(
             'Issues', f"{repo_url}/issues")
     docs_link = plugin_metadata['pyproject_toml']['project']['urls'].get(
             'Documentation', repo_url)
+    if not docs_link.startswith('http'):
+        # Assume it's a filepath relative to the root of the repo
+        docs_link = f"{repo_url}/{docs_link.lstrip('/')}"
 
     # Template partial for authors / maintainers; construct separately
     # since only one may be included

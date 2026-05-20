@@ -6,6 +6,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import shutil
 import tomllib
 
@@ -31,14 +32,32 @@ def _hashfile(filepath):
     return sha.hexdigest()
 
 
-def _version_info(owner, repo, version):
-    resp = requests.get(
-        f'https://api.github.com/repos/{owner}/{repo}/git/refs/tags/{version}')
-    resp.raise_for_status()
-    tag_json = resp.json()
-    resp = requests.get(tag_json['object']['url'])
-    resp.raise_for_status()
-    return resp.json()
+def _version_info(host, org, repo, version):
+    if 'github.com' in host:
+        resp = requests.get(
+            f'https://api.github.com/repos/{org}/{repo}/git/refs/tags/{version}')
+        tag_json = resp.json()
+        resp = requests.get(tag_json['object']['url'])
+        version_json = resp.json()
+        sha = version_json['sha']
+        date = version_json['author']['date']
+    else:
+        resp = requests.get(
+            f'https://{host}/api/v4/projects/{org}%2F{repo}/repository/tags/{version}')
+        tag_json = resp.json()
+        sha = tag_json['commit']['id']
+        date = tag_json['created_at']
+    return sha, date
+
+
+def _construct_url(host, org, repo, version):
+    if 'github.com' in host:
+        base_api_url = f"https://raw.githubusercontent.com/{org}/{repo}/refs/tags/{version}/FILENAME"
+
+    else:
+        base_api_url = f"https://{host}/api/v4/projects/{org}%2F{repo}/repository/files/FILENAME/raw?ref={version}"
+
+    return base_api_url
 
 
 def main(args=None):
@@ -64,14 +83,12 @@ def main(args=None):
         plugin_git_url = plugin['repo_url'].strip()
         plugin_version = plugin['version'].strip()
         LOGGER.info(f"Processing {plugin_git_url}, version {plugin_version}")
-        user, repo = plugin_git_url.replace(
-            'https://github.com/', '').replace('.git', '').split('/')
 
-        base_url = (
-            f'https://raw.githubusercontent.com/{user}/{repo}'
-            f'/refs/tags/{plugin_version}')
+        _, _, host, org, repo = re.sub(r'\.git$', '', plugin_git_url).split('/')
 
-        pyproject_url = f'{base_url}/pyproject.toml'
+        base_url = _construct_url(host, org, repo, plugin_version)
+
+        pyproject_url = base_url.replace('FILENAME', 'pyproject.toml')
         LOGGER.debug(f"Getting toml {pyproject_url}")
 
         resp = requests.get(pyproject_url)
@@ -82,23 +99,27 @@ def main(args=None):
         description_file = pyproject_toml['tool']['natcap']['invest'].get(
                            'registry_description')
         if description_file:
-            description_url = f"{base_url}/{description_file.strip('/')}"
+            description_url = base_url.replace('FILENAME', description_file.strip('/'))
             LOGGER.info(f"Getting description file {description_url}")
             resp = requests.get(description_url)
             if resp.ok:
                 description_outpath = os.path.join(DESCRIPTION_OUTDIR,
-                    f'{project_name}{os.path.splitext(description_url)[-1]}')
+                    f'{project_name}{os.path.splitext(description_file)[-1]}')
                 with open(description_outpath, 'w') as f:
                     f.write(resp.text)
                 description_partial = f'{os.path.basename(description_outpath)}'
+            else:
+                LOGGER.warning(
+                    "The description file {description_url} returned "
+                    "non-OK status code {resp.status_code}")
 
-        version_data = _version_info(user, repo, plugin_version)
+        commit_sha, tag_date = _version_info(host, org, repo, plugin_version)
         all_toml_data[project_name] = {
             'pyproject_toml': pyproject_toml,
             'github_repo': plugin_git_url,
             'version': plugin_version,
-            'current_commit_sha': version_data['sha'],
-            'date_last_updated': version_data['author']['date'],
+            'current_commit_sha': commit_sha,
+            'date_last_updated': tag_date,
             'plugin_type': plugin['plugin_type'],
             'keywords': plugin['keywords'],
             'description_path': description_partial
