@@ -6,6 +6,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import shutil
 import tomllib
 
@@ -14,9 +15,10 @@ import requests
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 REPO_ROOT = os.path.join(os.path.dirname(__file__), '..')
-DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.txt')
+DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.json')
 DEFAULT_OUTDIR = os.path.join(REPO_ROOT, 'html')
 
+DESCRIPTION_OUTDIR = os.path.join(REPO_ROOT, 'source', 'plugins', 'partials')
 
 def _hashfile(filepath):
     sha = hashlib.sha256()
@@ -29,11 +31,32 @@ def _hashfile(filepath):
     return sha.hexdigest()
 
 
-def _latest_commit_info(owner, repo):
-    resp = requests.get(
-        f'https://api.github.com/repos/{owner}/{repo}/commits/HEAD')
-    resp.raise_for_status()
-    return resp.json()
+def _version_info(host, org, repo, version):
+    if 'github.com' in host:
+        resp = requests.get(
+            f'https://api.github.com/repos/{org}/{repo}/git/refs/tags/{version}')
+        tag_json = resp.json()
+        resp = requests.get(tag_json['object']['url'])
+        version_json = resp.json()
+        sha = version_json['sha']
+        date = version_json['author']['date']
+    else:
+        resp = requests.get(
+            f'https://{host}/api/v4/projects/{org}%2F{repo}/repository/tags/{version}')
+        tag_json = resp.json()
+        sha = tag_json['commit']['id']
+        date = tag_json['created_at']
+    return sha, date
+
+
+def _construct_url(host, org, repo, version):
+    if 'github.com' in host:
+        base_api_url = f"https://raw.githubusercontent.com/{org}/{repo}/refs/tags/{version}/FILENAME"
+
+    else:
+        base_api_url = f"https://{host}/api/v4/projects/{org}%2F{repo}/repository/files/FILENAME/raw?ref={version}"
+
+    return base_api_url
 
 
 def main(args=None):
@@ -48,32 +71,58 @@ def main(args=None):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
+    if not os.path.exists(DESCRIPTION_OUTDIR):
+        os.makedirs(DESCRIPTION_OUTDIR)
+
     all_toml_data = {}  # name: loaded_toml
     with open(parsed_args.pluginslist, 'r') as plugins_list:
-        for line in plugins_list:
-            plugin_git_url = line.strip()
-            LOGGER.info(f"Processing {plugin_git_url}")
+        plugins_json = json.load(plugins_list)
 
-            user, repo = plugin_git_url.replace(
-                'https://github.com/', '').replace('.git', '').split('/')
+    for plugin in plugins_json:
+        plugin_git_url = plugin['repo_url'].strip()
+        plugin_version = plugin['version'].strip()
+        LOGGER.info(f"Processing {plugin_git_url}, version {plugin_version}")
 
-            pyproject_url = (
-                f'https://raw.githubusercontent.com/{user}/{repo}'
-                '/refs/heads/main/pyproject.toml')
-            LOGGER.debug(f"Getting toml {pyproject_url}")
+        _, _, host, org, repo = re.sub(r'\.git$', '', plugin_git_url).split('/')
 
-            resp = requests.get(pyproject_url)
-            pyproject_toml = tomllib.loads(resp.text)
-            project_name = pyproject_toml['project']['name']
+        base_url = _construct_url(host, org, repo, plugin_version)
 
-            latest_commit_data = _latest_commit_info(user, repo)
-            all_toml_data[project_name] = {
-                'pyproject_toml': pyproject_toml,
-                'github_repo': plugin_git_url,
-                'current_commit_sha': latest_commit_data['sha'],
-                'date_last_updated': latest_commit_data[
-                    'commit']['author']['date'],
-            }
+        pyproject_url = base_url.replace('FILENAME', 'pyproject.toml')
+        LOGGER.debug(f"Getting toml {pyproject_url}")
+
+        resp = requests.get(pyproject_url)
+        pyproject_toml = tomllib.loads(resp.text)
+        project_name = pyproject_toml['project']['name']
+
+        description_partial = None
+        description_file = pyproject_toml['tool']['natcap']['invest'].get(
+                           'registry_description')
+        if description_file:
+            description_url = base_url.replace('FILENAME', description_file.strip('/'))
+            LOGGER.info(f"Getting description file {description_url}")
+            resp = requests.get(description_url)
+            if resp.ok:
+                description_outpath = os.path.join(DESCRIPTION_OUTDIR,
+                    f'{project_name}{os.path.splitext(description_file)[-1]}')
+                with open(description_outpath, 'w') as f:
+                    f.write(resp.text)
+                description_partial = f'{os.path.basename(description_outpath)}'
+            else:
+                LOGGER.warning(
+                    f"The description file {description_url} returned "
+                    f"non-OK status code {resp.status_code}")
+
+        commit_sha, tag_date = _version_info(host, org, repo, plugin_version)
+        all_toml_data[project_name] = {
+            'pyproject_toml': pyproject_toml,
+            'github_repo': plugin_git_url,
+            'version': plugin_version,
+            'current_commit_sha': commit_sha,
+            'date_last_updated': tag_date,
+            'plugin_type': plugin['plugin_type'],
+            'keywords': plugin['keywords'],
+            'description_path': description_partial
+        }
 
     metadata_object = {
         'data': all_toml_data,
