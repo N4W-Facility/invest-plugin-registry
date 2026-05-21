@@ -18,7 +18,6 @@ DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.txt')
 DEFAULT_OUTDIR = os.path.join(REPO_ROOT, 'html')
 
 
-
 def _hashfile(filepath):
     sha = hashlib.sha256()
     with open(filepath, 'rb') as opened_file:
