@@ -14,6 +14,8 @@ author = 'The Natural Capital Alliance'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "sphinx_design",
+    "sphinx_design_elements",
     "myst_parser"
 ]
 
