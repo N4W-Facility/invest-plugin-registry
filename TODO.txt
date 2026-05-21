@@ -1,3 +1,6 @@
 (A) is it important to create some kind of security scanning?
+    * fetter? https://github.com/fetter-io/fetter-py
 (A) How will releases be handled, if at all?
+(A) How will metadata be stored/persisted?
+
 
