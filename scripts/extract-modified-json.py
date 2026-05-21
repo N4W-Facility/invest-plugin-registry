@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.6"
+# dependencies = [
+#     "requests",
+# ]
+# ///
 import argparse
 import hashlib
 import json

@@ -2,9 +2,15 @@
 
 Tests performed:
     * make sure all attributes are there in pyproject.toml
-    *
 
 """
+# /// script
+# requires-python = ">=3.6"
+# dependencies = [
+#     "requests",
+#     "validate_pyproject",
+# ]
+# ///
 import argparse
 import json
 import re
@@ -69,7 +75,7 @@ def _validate_project_json_file(filepath):
                 f"Plugin {object_num} is missing the attribute 'repo_url'")
 
         if "version" in plugin_data:
-            if not re.match('^[0-9]+\.[0-9]+\.[0-9+$',
+            if not re.match('^[0-9]+.[0-9]+.[0-9]+$',
                             str(plugin_data['version'])):
                 issues.append(
                     "Version string must be in the form MAJOR.MINOR.PATCH")

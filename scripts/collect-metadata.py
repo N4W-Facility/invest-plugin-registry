@@ -1,4 +1,10 @@
 """Collect and repackage project metadata."""
+# /// script
+# requires-python = ">=3.6"
+# dependencies = [
+#     "requests",
+# ]
+# ///
 import argparse
 import bz2
 import datetime

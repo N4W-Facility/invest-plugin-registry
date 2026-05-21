@@ -20,12 +20,14 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - uses: actions/setup-python@v5
+            - uses: actions/setup-python@v6
               with:
                   python-version: "3.14"
                   cache: "pip"
+                  python-version-file: ".python-version"
 
-            - run: pip install requests validate_pyproject
+            - name: Install uv
+              uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
             - name: Post the reviewer checklist
               shell: bash
@@ -39,7 +41,7 @@ jobs:
 
                   # Extract the new plugin information from plugins.json
                   NEW_PLUGIN_DATA=new_plugin.json
-                  python extract-modified-json.py \
+                  uv run extract-modified-json.py \
                     plugins.json \
                     main \
                     "$NEW_PLUGIN_DATA"
@@ -51,7 +53,7 @@ jobs:
 
                   # Lint things
                   LINT_RESULTS_FILE=lint_results.txt
-                  python scripts/lint-metadata.py \
+                  uv run scripts/lint-metadata.py \
                     "${LOCAL_REPO_DIR}/pyproject.toml" \
                     "plugins.json" \
                     --target-file="$LINT_RESULTS_FILE"
