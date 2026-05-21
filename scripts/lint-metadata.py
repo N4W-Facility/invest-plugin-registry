@@ -126,10 +126,14 @@ def main(args=None):
         with open(parsed_args.target_file, 'w'):
             pass
 
+    lines_written = 0
     def _write_to_file(possible_string):
         if possible_string is None:
             return
-        elif parsed_args.target_file is None:
+        else:
+            lines_written += possible_string.count('\n')
+
+        if parsed_args.target_file is None:
             print(possible_string)
         else:
             with open(parsed_args.target_file, 'a') as target_file:
@@ -137,6 +141,9 @@ def main(args=None):
 
     _write_to_file(_validate_pyproject_file(parsed_args.PYPROJECT_TOML_FILE))
     _write_to_file(_validate_project_json_file(parsed_args.PLUGIN_JSON_FILE))
+
+    if not lines_written:
+        _write_to_file("No linting issues found!")
 
 
 if __name__ == '__main__':
