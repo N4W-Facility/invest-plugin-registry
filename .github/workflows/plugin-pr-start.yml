@@ -27,9 +27,6 @@ jobs:
 
             - run: pip install requests validate_pyproject
 
-            # 2. extract the modified json file contents.
-            # 3. Run validation checks against the new file
-
             - name: Post the reviewer checklist
               shell: bash
               run: |
@@ -39,4 +36,25 @@ jobs:
               shell: bash
               run: |
                   set -e  # fail script on first command failure.
-                  python extract-modified-json.py plugins.json main new_plugin.json
+
+                  # Extract the new plugin information from plugins.json
+                  NEW_PLUGIN_DATA=new_plugin.json
+                  python extract-modified-json.py \
+                    plugins.json \
+                    main \
+                    "$NEW_PLUGIN_DATA"
+
+                  # clone the new repo
+                  REPO_URL=$(cat "$NEW_PLUGIN_DATA" | jq --raw-output .repo_url)
+                  LOCAL_REPO_DIR=repo
+                  git clone "$REPO_URL" "$LOCAL_REPO_DIR"
+
+                  # Lint things
+                  LINT_RESULTS_FILE=lint_results.txt
+                  python scripts/lint-metadata.py \
+                    "${LOCAL_REPO_DIR}/pyproject.toml" \
+                    "plugins.json" \
+                    --target-file="$LINT_RESULTS_FILE"
+
+                  # Post results to the PR for review
+                  gh pr comment "$PR_NUMBER" --body-file="$LINT_RESULTS_FILE"
