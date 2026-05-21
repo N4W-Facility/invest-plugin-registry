@@ -1,0 +1,42 @@
+name: Start plugin contribution PR
+
+on:
+    pull_request:
+        types: [opened]
+        paths:
+            - 'plugins.json'
+
+permissions:
+    contents: read
+    pull-requests: write
+
+jobs:
+    start-plugin-contrib-pr:
+        runs-on: ubuntu-latest
+        env:
+            PR_NUMBER: ${{ github.event.number }}
+            REPO: ${{ github.repository }}
+            GH_TOKEN: ${{ github.token }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: "3.14"
+                  cache: "pip"
+
+            - run: pip install requests validate_pyproject
+
+            # 2. extract the modified json file contents.
+            # 3. Run validation checks against the new file
+
+            - name: Post the reviewer checklist
+              shell: bash
+              run: |
+                  gh pr comment "$PR_NUMBER" --body-file="review-rubric.md"
+
+            - name: Extract the new plugin data and lint it
+              shell: bash
+              run: |
+                  set -e  # fail script on first command failure.
+                  python extract-modified-json.py plugins.json main new_plugin.json
