@@ -7,6 +7,7 @@ Tests performed:
 # /// script
 # requires-python = ">=3.6"
 # dependencies = [
+#     "packaging>=24.2",
 #     "requests",
 #     "validate_pyproject",
 # ]
@@ -17,32 +18,32 @@ import re
 import tomllib
 
 import requests
-import validate_pyproject
+import validate_pyproject.api  # requires packaging>=24.2 for enforcement.
 
 ALLOWED_PLUGIN_TYPES = [
-    'preprocessing', 'postprocessing', 'workflow', 'model_variant',
+    'preprocessing', 'postprocessing', 'workflow', 'invest_model_variant',
     'new_model', 'other']
 
 
 def _validate_pyproject_file(filepath):
     validator = validate_pyproject.api.Validator()
-    with open(filepath, 'r') as tomlfile:
+    with open(filepath, 'rb') as tomlfile:
         pyproject_data = tomllib.load(tomlfile)
 
     # Check for the standard pyproject.toml validation requirements
     try:
-        validator.validator(pyproject_data)
+        validator(pyproject_data)
     except validate_pyproject.errors.ValidationError as error:
         return f"Could not load pyproject.toml: {error.message}"
 
     # Check for the plugins registry's requirements
     natcap_requirement_errors = []
     for attribute in ['Documentation', 'Issues', 'Repository']:
-        if attribute not in pyproject_data['project']['data']:
+        if attribute not in pyproject_data['project']['urls']:
             natcap_requirement_errors.append(
                 f'project.data block is missing the {attribute} attribute')
             continue
-        req = requests.head(pyproject_data['project']['data'][attribute])
+        req = requests.head(pyproject_data['project']['urls'][attribute])
         if not req.ok:
             natcap_requirement_errors.append(
                 f'project.data.{attribute} could not be loaded')
@@ -122,8 +123,8 @@ def main(args=None):
 
     # Restart the file so we can append to it later.
     if parsed_args.target_file is not None:
-        with open(parsed_args.target_file, 'w') as target_file:
-            target_file.write()
+        with open(parsed_args.target_file, 'w'):
+            pass
 
     def _write_to_file(possible_string):
         if possible_string is None:
@@ -134,8 +135,8 @@ def main(args=None):
             with open(parsed_args.target_file, 'a') as target_file:
                 target_file.write(possible_string)
 
-    _write_to_file(_validate_pyproject_file(parsed_args.pyproject_toml_file))
-    _write_to_file(_validate_project_json_file(parsed_args.plugin_json_file))
+    _write_to_file(_validate_pyproject_file(parsed_args.PYPROJECT_TOML_FILE))
+    _write_to_file(_validate_project_json_file(parsed_args.PLUGIN_JSON_FILE))
 
 
 if __name__ == '__main__':
