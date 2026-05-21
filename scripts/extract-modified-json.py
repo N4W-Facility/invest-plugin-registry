@@ -18,6 +18,7 @@ def main(args):
     parser = argparse.ArgumentParser()
     parser.add_args('plugins_json', default='plugins.json')  # filepath to the local plugins json
     parser.add_args('reference_git_ref', default='main')  # The head ref, e.g. main, of the reference file
+    parser.add_args('target_json', default='new_content.json')
 
     parsed_args = parser.parse_args(args)
 
@@ -60,7 +61,9 @@ def main(args):
     # We should now be confident that only the one object remains.
     # Extract it and return the git URL.
     # The entry (and all others) is linted in a different script.
-    print(nonmatching_data[0]['repo_url'])
+    with open(parsed_args.target_json, 'w') as target_json_file:
+        target_json_file.write(
+            json.dumps(nonmatching_data[0], indent=4, sort_keys=True))
 
 
 if __name__ == '__main__':
