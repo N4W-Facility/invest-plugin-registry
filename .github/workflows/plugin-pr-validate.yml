@@ -8,6 +8,7 @@ on:
     push:
         paths:
             - 'plugins.json'
+            - '.github/workflows/plugin-pr-validate.yml'
 
 permissions:
     contents: read
