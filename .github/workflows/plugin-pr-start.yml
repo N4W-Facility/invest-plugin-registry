@@ -41,7 +41,7 @@ jobs:
 
                   # Extract the new plugin information from plugins.json
                   NEW_PLUGIN_DATA=new_plugin.json
-                  uv run extract-modified-json.py \
+                  uv run scripts/extract-modified-json.py \
                     plugins.json \
                     main \
                     "$NEW_PLUGIN_DATA"
