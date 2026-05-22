@@ -143,6 +143,8 @@ def main(args=None):
 
     if (pyproject_errors is None and json_errors is None):
         _write_to_file("No errors found in the project!")
+    else:
+        parser.error("Linting errors found")
 
 
 if __name__ == '__main__':
