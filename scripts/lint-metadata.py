@@ -15,6 +15,7 @@ Tests performed:
 import argparse
 import json
 import re
+import sys
 import tomllib
 
 import requests
@@ -148,4 +149,4 @@ def main(args=None):
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
