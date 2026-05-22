@@ -116,14 +116,14 @@ def main(args=None):
                         help="path to the plugin.json file")
     parser.add_argument(
         '--target-file',
-        default=None,
+        default='',
         help=("Where output should be written. If not provided, output is "
               "written to stdout"))
 
     parsed_args = parser.parse_args(args)
 
     # Restart the file so we can append to it later.
-    if parsed_args.target_file is not None:
+    if parsed_args.target_file:
         with open(parsed_args.target_file, 'w'):
             pass
 
