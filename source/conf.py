@@ -51,6 +51,7 @@ tags_badge_colors = {
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'furo'  # pip install furo
+html_favicon = "_static/favicon.png"
 html_title = "InVEST Plugin Registry"
 html_static_path = ['_static']
 html_theme_options = {
