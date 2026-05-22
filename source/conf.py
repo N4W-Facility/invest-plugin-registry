@@ -16,7 +16,8 @@ author = 'The Natural Capital Alliance'
 extensions = [
     "sphinx_design",
     "sphinx_design_elements",
-    "myst_parser"
+    "sphinx_tags",
+    "myst_parser",
 ]
 
 source_suffix = {
@@ -27,6 +28,23 @@ source_suffix = {
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+
+# -- Sphinx Tags Config ------------------------------------------------------
+tags_create_tags = True
+tags_create_badges = True
+tags_intro_text = ''
+tags_overview_title = "All Plugin Registry Keywords"
+tags_page_header = 'With this keyword'
+tags_page_title = 'Keyword'
+tags_badge_colors = {
+    "Preprocessing": "primary",
+    "Postprocessing": "primary",
+    "Workflow": "primary",
+    "InVEST Model Variant": "primary",
+    "New Model": "primary",
+    "Other": "primary",
+    "*": "info"
+}
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -41,11 +59,13 @@ html_theme_options = {
     'light_css_variables': {
         'color-brand-primary': '#175e54',
         'color-brand-content': '#2e2d29',
+        'color-link': '#009ab4',
         'color-announcement-background': '#007c92',
     },
     'dark_css_variables': {
         'color-brand-primary': '#B6B1A9',
         'color-brand-content': '#F4F4F4',
+        'color-link': '#009ab4',
         'color-announcement-background': '#620059',
     },
     'sidebar_hide_name': True,  # don't show name in sidebar, only logo

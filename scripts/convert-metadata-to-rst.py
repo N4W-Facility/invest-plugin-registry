@@ -92,6 +92,11 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
         # Assume it's a filepath relative to the root of the repo
         docs_link = f"{repo_url}/{docs_link.lstrip('/')}"
 
+    # Tags
+    all_tags = ', '.join(tag for tag in
+        [PLUGIN_TYPES.get(plugin_metadata['plugin_type'], None)] +
+        plugin_metadata['keywords'] if tag != None)
+
     # Template partial for authors / maintainers; construct separately
     # since only one may be included
     maintainers = plugin_metadata['pyproject_toml']['project'].get('maintainers')
@@ -162,8 +167,7 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
                 | `Documentation <{docs_link}>`_ :octicon:`link-external` | `Issue Tracker <{issues_link}>`_ :octicon:`link-external`
                 |
 
-                :tags-primary:`{PLUGIN_TYPES.get(plugin_metadata['plugin_type'], 'Unknown')}`
-                :tags-info:`{','.join(tag for tag in plugin_metadata['keywords'])}`
+                .. tags:: {all_tags}
 
         {description_partial}
 
