@@ -126,12 +126,9 @@ def main(args=None):
         with open(parsed_args.target_file, 'w'):
             pass
 
-    lines_written = 0
     def _write_to_file(possible_string):
         if possible_string is None:
             return
-        else:
-            lines_written += possible_string.count('\n')
 
         if parsed_args.target_file is None:
             print(possible_string)
@@ -139,11 +136,13 @@ def main(args=None):
             with open(parsed_args.target_file, 'a') as target_file:
                 target_file.write(possible_string)
 
-    _write_to_file(_validate_pyproject_file(parsed_args.PYPROJECT_TOML_FILE))
-    _write_to_file(_validate_project_json_file(parsed_args.PLUGIN_JSON_FILE))
+    pyproject_errors = _validate_pyproject_file(parsed_args.PYPROJECT_TOML_FILE)
+    json_errors = _validate_project_json_file(parsed_args.PLUGIN_JSON_FILE)
+    _write_to_file(pyproject_errors)
+    _write_to_file(json_errors)
 
-    if not lines_written:
-        _write_to_file("No linting issues found!")
+    if (pyproject_errors is None and json_errors is None):
+        _write_to_file("No errors found in the project!")
 
 
 if __name__ == '__main__':
