@@ -1,4 +1,12 @@
-Reviewer Instructions: Please review the plugin submission pull request based on the following criteria:
+## Thank you for your plugin request!
+
+A reviewer will take a look using the checklist below, and you can find more
+information about the [review process
+here](https://natcap.github.io/invest-plugin-registry/docs/submission_process.html#step-4-submit-a-pull-request-for-review), and more about the [registry's governance here](https://natcap.github.io/invest-plugin-registry/docs/governance.html).
+
+## Dear Reviewer,
+
+Please review the plugin submission pull request based on the following criteria:
 
 * [ ] The submitter included all required information in the PR description, including:
     * [ ] The plugin repo URL;
