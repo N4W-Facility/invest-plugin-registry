@@ -35,7 +35,7 @@ jobs:
             - name: Extract the new plugin data and lint it
               shell: bash
               run: |
-                  set -e  # fail script on first command failure.
+                  set -ex  # fail script on first command failure.
 
                   # Extract the new plugin information from plugins.json
                   NEW_PLUGIN_DATA=new_plugin.json
