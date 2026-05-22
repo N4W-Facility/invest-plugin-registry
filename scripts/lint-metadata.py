@@ -14,12 +14,15 @@ Tests performed:
 # ///
 import argparse
 import json
+import logging
 import re
 import sys
 import tomllib
 
 import requests
 import validate_pyproject.api  # requires packaging>=24.2 for enforcement.
+
+logging.basicConfig(level=logging.DEBUG)
 
 ALLOWED_PLUGIN_TYPES = [
     'preprocessing', 'postprocessing', 'workflow', 'invest_model_variant',
@@ -109,8 +112,11 @@ def _validate_project_json_file(filepath):
 
 
 def main(args=None):
+    LOGGER.debug(args)
     parser = argparse.ArgumentParser(
-        "lint-metadata.py", description=())
+        "lint-metadata.py", description=(
+            "A script for linting metadata in pyproject.toml and plugins.json."
+        ))
     parser.add_argument('PYPROJECT_TOML_FILE', help="path to a pyproject.toml file")
     parser.add_argument('PLUGIN_JSON_FILE',
                         help="path to the plugin.json file")
