@@ -20,11 +20,11 @@ def _hashdict(source_dict):
     return hashlib.sha256(encoded_data, usedforsecurity=False).hexdigest()
 
 
-def main(args):
+def main(args=None):
     parser = argparse.ArgumentParser()
-    parser.add_args('plugins_json', default='plugins.json')  # filepath to the local plugins json
-    parser.add_args('reference_git_ref', default='main')  # The head ref, e.g. main, of the reference file
-    parser.add_args('target_json', default='new_content.json')
+    parser.add_argument('plugins_json', default='plugins.json')  # filepath to the local plugins json
+    parser.add_argument('reference_git_ref', default='main')  # The head ref, e.g. main, of the reference file
+    parser.add_argument('target_json', default='new_content.json')
 
     parsed_args = parser.parse_args(args)
 
@@ -35,7 +35,7 @@ def main(args):
     resp.raise_for_status()  # shouldn't error but you never know
     reference_json = resp.json()
 
-    with open(parsed_args.plugin_json) as pr_json_file:
+    with open(parsed_args.plugins_json) as pr_json_file:
         pr_json = json.load(pr_json_file)
 
     # Fail if no change to the pr json file.
