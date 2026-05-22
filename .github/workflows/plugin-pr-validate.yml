@@ -1,6 +1,10 @@
 name: Validate new plugin
 
 on:
+    pull_request:
+        types: [opened]
+        paths:
+            - 'plugins.json'
     push:
         paths:
             - 'plugins.json'
