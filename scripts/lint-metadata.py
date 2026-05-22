@@ -14,7 +14,7 @@ import requests
 import validate_pyproject
 
 ALLOWED_PLUGIN_TYPES = [
-    'preprocessing', 'postprocessing', 'workflow', 'model_variant',
+    'preprocessing', 'postprocessing', 'workflow', 'invest_model_variant',
     'new_model', 'other']
 
 
