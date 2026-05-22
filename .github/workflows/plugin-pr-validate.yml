@@ -46,6 +46,7 @@ jobs:
                     plugins.json \
                     main \
                     "$NEW_PLUGIN_DATA"
+                  cat "$NEW_PLUGIN_DATA"
 
                   # clone the new repo
                   REPO_URL=$(cat "$NEW_PLUGIN_DATA" | jq --raw-output .repo_url)
@@ -54,7 +55,10 @@ jobs:
 
                   # Lint things
                   LINT_RESULTS_FILE=lint_results.txt
-                  uv run scripts/lint-metadata.py --target-file "$LINT_RESULTS_FILE" "${LOCAL_REPO_DIR}/pyproject.toml" "plugins.json"
+                  uv run scripts/lint-metadata.py \
+                    --target-file "$LINT_RESULTS_FILE" \
+                    "${LOCAL_REPO_DIR}/pyproject.toml" \
+                    "plugins.json"
 
                   # Post results to the PR for review
                   gh pr comment "$PR_NUMBER" --body-file="$LINT_RESULTS_FILE"
