@@ -2,7 +2,7 @@ name: Start plugin contribution PR
 
 on:
     pull_request:
-        types: [opened]
+        types: [opened, reopened]
         paths:
             - 'plugins.json'
 
