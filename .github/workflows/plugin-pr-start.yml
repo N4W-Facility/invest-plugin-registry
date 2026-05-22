@@ -15,6 +15,7 @@ jobs:
         runs-on: ubuntu-latest
         env:
             PR_NUMBER: ${{ github.event.number }}
+            GH_TOKEN: ${{ github.token }}
         steps:
             - uses: actions/checkout@v4
 
