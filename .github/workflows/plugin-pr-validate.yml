@@ -53,7 +53,7 @@ jobs:
                   # Lint things
                   LINT_RESULTS_FILE=lint_results.txt
                   uv run scripts/lint-metadata.py \
-                    --target-file="$LINT_RESULTS_FILE" \
+                    --target-file "$LINT_RESULTS_FILE" \
                     "${LOCAL_REPO_DIR}/pyproject.toml" \
                     "plugins.json"
 
