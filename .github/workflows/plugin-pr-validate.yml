@@ -42,7 +42,7 @@ jobs:
 
                   # Extract the new plugin information from plugins.json
                   NEW_PLUGIN_DATA=new_plugin.json
-                  uv run scripts/extract-modified-json.py \
+                  uv run --script scripts/extract-modified-json.py \
                     plugins.json \
                     main \
                     "$NEW_PLUGIN_DATA"
@@ -55,7 +55,7 @@ jobs:
 
                   # Lint things
                   LINT_RESULTS_FILE=lint_results.txt
-                  uv run scripts/lint-metadata.py \
+                  uv run --script scripts/lint-metadata.py \
                     --target-file "$LINT_RESULTS_FILE" \
                     "${LOCAL_REPO_DIR}/pyproject.toml" \
                     "plugins.json"
