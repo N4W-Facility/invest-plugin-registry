@@ -23,6 +23,7 @@ import requests
 import validate_pyproject.api  # requires packaging>=24.2 for enforcement.
 
 logging.basicConfig(level=logging.DEBUG)
+LOGGER = logging.getLogger(__name__)
 
 ALLOWED_PLUGIN_TYPES = [
     'preprocessing', 'postprocessing', 'workflow', 'invest_model_variant',
