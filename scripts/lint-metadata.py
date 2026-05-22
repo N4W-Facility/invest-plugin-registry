@@ -152,7 +152,11 @@ def main(args=None):
     if (pyproject_errors is None and json_errors is None):
         _write_to_file("No errors found in the project!")
     else:
-        errors = '\n'.join([pyproject_errors, json_errors])
+        error_vars = []
+        for var in [pyproject_errors, json_errors]:
+            if var is not None:
+                error_vars.append(var)
+        errors = '\n'.join(error_vars)
         parser.exit(1, f"Linting errors found: {errors}")
 
 
