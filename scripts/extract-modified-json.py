@@ -5,10 +5,15 @@
 # ]
 # ///
 import argparse
+import functools
 import hashlib
 import json
+import logging
 
 import requests
+
+logging.basicConfig(level=logging.DEBUG)
+LOGGER = logging.getLogger(__name__)
 
 RAW_REPO_PREFIX = (
     'https://raw.githubusercontent.com/natcap/invest-plugin-registry')
@@ -34,19 +39,27 @@ def main(args=None):
     resp = requests.get(reference_url)
     resp.raise_for_status()  # shouldn't error but you never know
     reference_json = resp.json()
+    LOGGER.debug(f"Reference_json: {reference_json}")
 
     with open(parsed_args.plugins_json) as pr_json_file:
         pr_json = json.load(pr_json_file)
+        LOGGER.debug(f"PR json: {pr_json}")
 
     # Fail if no change to the pr json file.
     if pr_json == reference_json:
-        parser.error("No changes found in the plugins json file.")
+        parser.exit(1, "No changes found in the plugins json file.")
 
     # Fail if there isn't 1 more item in the pr json file than the reference.
-    n_changed_objects = len(pr_json) - len(reference_json)
-    if n_changed_objects != 1:
-        parser.error(
-            f"Expected exactly 1 new object, not {n_changed_objects}")
+    _serialize = functools.partial(json.dumps, sort_keys=True)
+    pr_json_set = set(_serialize(d) for d in pr_json)
+    reference_json_set = set(_serialize(d) for d in reference_json)
+
+    # make sure that the only change is to the PR json
+    if not (len(pr_json_set - reference_json_set) == 1 and
+            len(reference_json_set - pr_json_set) == 0):
+        parser.exit(
+            2, ("Expected exactly 1 new object and that the reference JSON "
+                "is unchanged"))
 
     # Compare individual entries to ensure all entries are unchanged
     source_data_hashed = {}
@@ -60,9 +73,10 @@ def main(args=None):
             nonmatching_data.append(data_dict)
 
     if len(nonmatching_data) != 1:
-        parser.error(
+        parser.exit(
+            3, (
             "Some data in the json file has been modified relative to "
-            f"{parsed_args._reference_git_ref}")
+            f"{parsed_args._reference_git_ref}"))
 
     # We should now be confident that only the one object remains.
     # Extract it and return the git URL.
