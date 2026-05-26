@@ -1,8 +1,3 @@
-.. InVEST Plugins Registry master file, created by
-   sphinx-quickstart on Wed Apr  8 21:21:51 2026.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 InVEST Community Plugin Registry
 ================================
 
@@ -18,12 +13,7 @@ Browse available plugins
 A list of known community plugins can be found `here <plugins/index.html>`_. You can also
 use the search bar in the left column to search on keywords.
 
-.. important::
-   As with any third-party software, installing a plugin for use with InVEST may pose a
-   risk to your data, computer, and/or network. Please make sure you trust the authors
-   of the plugin you are installing. The NatCap Alliance does not take any responsibility
-   for registered plugins. To learn more about what the maintainers of this registry do
-   to help prevent harmful plugins, refer to the :ref:`security_policy`.
+.. include:: docs/install_warning.rst
 
 Contribute a plugin
 -------------------
