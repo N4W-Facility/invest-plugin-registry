@@ -1,11 +1,5 @@
 [
   {
-    "repo_url": "https://github.com/natcap/invest-routedem-tfa-range.git",
-    "version": "1.0.0",
-    "plugin_type": "invest_model_variant",
-    "keywords": ["RouteDEM", "hydrology", "streams", "routing"]
-  },
-  {
     "repo_url": "https://github.com/natcap/invest-schistosomiasis.git",
     "version": "0.0.1",
     "plugin_type": "new_model",
