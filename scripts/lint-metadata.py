@@ -39,7 +39,10 @@ def _validate_pyproject_file(filepath):
     try:
         validator(pyproject_data)
     except validate_pyproject.errors.ValidationError as error:
-        return f"Could not load pyproject.toml: {error.message}"
+        # error.summary is the 1-line error message
+        # error.details is the full, multi-hundred-line description
+        # error.message has both error.summary, error.details.
+        return f"Could not load pyproject.toml: {error.summary}"
 
     # Check for the plugins registry's requirements
     natcap_requirement_errors = []
