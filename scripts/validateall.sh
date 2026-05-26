@@ -27,6 +27,9 @@ write_comment () {
 # Be eXplicit about what's being run
 set -x
 
+# Fail on first error
+set -e
+
 # Extract the new plugin information from plugins.json
 NEW_PLUGIN_DATA_FILE=new_plugin.json
 uv run --script scripts/extract-modified-json.py \
@@ -38,6 +41,10 @@ cat "$NEW_PLUGIN_DATA_FILE"
 # clone the new repo
 REPO_URL=$(cat "$NEW_PLUGIN_DATA_FILE" | jq --raw-output .repo_url)
 LOCAL_REPO_DIR=repo
+if [ -e "$LOCAL_REPO_DIR" ]
+then
+    rm -rf "$LOCAL_REPO_DIR"
+fi
 git clone "$REPO_URL" "$LOCAL_REPO_DIR"
 
 # Lint things
