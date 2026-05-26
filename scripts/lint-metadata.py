@@ -29,6 +29,25 @@ ALLOWED_PLUGIN_TYPES = [
     'preprocessing', 'postprocessing', 'workflow', 'invest_model_variant',
     'new_model', 'other']
 
+def _get_pyproject_attr(tomldata, attr):
+    subtomldata = tomldata
+    for subattr in attr.split('.'):
+        if subattr not in subtomldata:
+            # Raise an error to distinguish from returning the value itself.
+            raise ValueError(
+                f"Pproject.toml attribute not found: {attr}")
+        else:
+            subtomldata = subtomldata[subattr]
+
+    # by the time we get to this point, it's just the attribute value.
+    return subtomldata
+
+
+def _test_url(url):
+    req = requests.head(url)
+    if not req.ok:
+        return f"Could not load URL {url}"
+
 
 def _validate_pyproject_file(filepath):
     validator = validate_pyproject.api.Validator()
@@ -44,22 +63,29 @@ def _validate_pyproject_file(filepath):
         # error.message has both error.summary, error.details.
         return f"Could not load pyproject.toml: {error.summary}"
 
-    # Check for the plugins registry's requirements
     natcap_requirement_errors = []
-    for attribute in ['Documentation', 'Issues', 'Repository']:
-        if attribute not in pyproject_data['project']['urls']:
+    attrs_to_validate = {
+        'project.urls.Documentation': _test_url,
+        'project.urls.Issues': _test_url,
+        'project.urls.Repository': _test_url,
+    }
+    for attr, test_callable in attrs_to_validate.items():
+        try:
+            value = _get_pyproject_attr(pyproject_data, attr)
+        except ValueError:
             natcap_requirement_errors.append(
-                f'project.data block is missing the {attribute} attribute')
+                f'Pyproject.toml is missing the attribute {attr}')
             continue
-        req = requests.head(pyproject_data['project']['urls'][attribute])
-        if not req.ok:
+
+        test_result = test_callable(value)
+        if test_result is not None:
             natcap_requirement_errors.append(
-                f'project.data.{attribute} could not be loaded')
+                f'Pyproject.toml {attr}: {test_result}')
 
     if natcap_requirement_errors:
         return (
             f"{filepath} was found to have validation errors:\n"
-            + "\n".join(f"* {issue}" for issue in natcap_requirement_errors))
+            + "\n".join(f"❌ {issue}" for issue in natcap_requirement_errors))
 
     return None
 
@@ -111,7 +137,7 @@ def _validate_project_json_file(filepath):
     if issues:
         return (
             f"{filepath} was found to have some formatting issues:\n"
-            + "\n".join(f"* {issue}" for issue in issues))
+            + "\n".join(f"❌ {issue}" for issue in issues))
     return None
 
 
