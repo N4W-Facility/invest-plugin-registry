@@ -13,8 +13,10 @@ Tests performed:
 # ]
 # ///
 import argparse
+import collections
 import json
 import logging
+import os
 import re
 import sys
 import tomllib
@@ -28,6 +30,9 @@ LOGGER = logging.getLogger(__name__)
 ALLOWED_PLUGIN_TYPES = [
     'preprocessing', 'postprocessing', 'workflow', 'invest_model_variant',
     'new_model', 'other']
+
+Required = collections.namedtuple('Required', ['tomlattr'])
+Optional = collections.namedtuple('Optional', ['tomlattr'])
 
 def _get_pyproject_attr(tomldata, attr):
     subtomldata = tomldata
@@ -49,6 +54,16 @@ def _test_url(url):
         return f"Could not load URL {url}"
 
 
+def _is_nonempty(s):
+    if len(s) == 0:
+        return "Expected text, but didn't find anything"
+
+
+def _file_exists(filepath):
+    if not os.path.exists(filepath):
+        return f"Could not find local file {filepath}"
+
+
 def _validate_pyproject_file(filepath):
     validator = validate_pyproject.api.Validator()
     with open(filepath, 'rb') as tomlfile:
@@ -65,22 +80,51 @@ def _validate_pyproject_file(filepath):
 
     natcap_requirement_errors = []
     attrs_to_validate = {
-        'project.urls.Documentation': _test_url,
-        'project.urls.Issues': _test_url,
-        'project.urls.Repository': _test_url,
+        Required('project.urls.Documentation'): _test_url,
+        Required('project.urls.Issues'): _test_url,
+        Required('project.urls.Repository'): _test_url,
+        Required('project.name'): _is_nonempty,
+        Required('project.description'): _is_nonempty,
+        Required('project.readme'): _is_nonempty,
+        Required('project.license'): _is_nonempty,
+        Required('project.license-files'): _is_nonempty,
+        Optional('tool.natcap.invest.registry_description'): _file_exists,
     }
     for attr, test_callable in attrs_to_validate.items():
+        is_required = isinstance(attr, Required)
+        attrname = attr.tomlattr
         try:
-            value = _get_pyproject_attr(pyproject_data, attr)
+            value = _get_pyproject_attr(pyproject_data, attrname)
         except ValueError:
-            natcap_requirement_errors.append(
-                f'Pyproject.toml is missing the attribute {attr}')
+            if is_required:
+                natcap_requirement_errors.append(
+                    'Pyproject.toml is missing the required attribute '
+                    f'{attrname}')
+            else:
+                LOGGER.debug(f"Attribute {attrname} is optional and not "
+                             "provided; skipping")
             continue
 
         test_result = test_callable(value)
         if test_result is not None:
             natcap_requirement_errors.append(
                 f'Pyproject.toml {attr}: {test_result}')
+
+    # Add any unique tests here
+    # Required('project.authors/maintainers'): ,
+    # Either or both project.authors, project.maintainers must be defined
+    # The details are validated by validate_pyproject
+    both_found = True
+    for attr in ['project.authors', 'project.maintainers']:
+        try:
+            _ = _get_pyproject_attr(pyproject_data, attr)
+        except ValueError:
+            both_found = False
+
+    if not both_found:
+        natcap_requirement_errors.append(
+            "Either project.authors or project.maintainers (or both) must be "
+            "defined in your pyproject.toml file")
 
     if natcap_requirement_errors:
         return (
@@ -179,11 +223,15 @@ def main(args=None):
     _write_to_file(json_errors)
 
     if (pyproject_errors is None and json_errors is None):
-        _write_to_file("No errors found in the project!")
+        _write_to_file("✅ No errors found in the project!")
     else:
         error_vars = []
-        for var in [pyproject_errors, json_errors]:
-            if var is not None:
+        for filename, var in [('pyproject.toml', pyproject_errors),
+                              ('plugins.json', json_errors)]:
+            if var is None:
+                _write_to_file(
+                    f"\n✅ No validation errors found in {filename}\n")
+            else:
                 error_vars.append(var)
         errors = '\n'.join(error_vars)
         parser.exit(1, f"Linting errors found: {errors}")
