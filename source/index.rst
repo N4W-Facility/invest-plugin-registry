@@ -13,6 +13,9 @@ Browse available plugins
 A list of known community plugins can be found `here <plugins/index.html>`_. You can also
 use the search bar in the left column to search on keywords.
 
+If you find a plugin you'd like to use, you can install it from the InVEST Workbench. Take a
+look at the :ref:`Plugin Installation Docs <installing>` for more details.
+
 .. include:: docs/install_warning.rst
 
 Contribute a plugin
@@ -20,10 +23,12 @@ Contribute a plugin
 
 If you've created an InVEST plugin and would like to make it available to others in the
 community, the best way to make it discoverable is to submit it for inclusion in this
-registry. Take a look at the :ref:`submission` docs.
+registry. Take a look at the :ref:`Plugin Submission Docs <submission>` for a detailed
+guide.
 
 Have an idea for a plugin or an existing script that you'd like to turn into one? Take a
-look at the `Plugin Developer Docs <https://invest.readthedocs.io/en/latest/plugins.html>`_.
+look at the `Plugin Developer Docs <https://invest.readthedocs.io/en/latest/plugins.html>`_
+to learn more.
 
 ----
 
