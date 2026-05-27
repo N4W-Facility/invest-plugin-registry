@@ -54,8 +54,15 @@ uv run --script scripts/lint-metadata.py \
   --target-file "$LINT_RESULTS_FILE" \
   "${LOCAL_REPO_DIR}/pyproject.toml" \
   "plugins.json"
+ERRORS=$?
 
 # Post results to the PR for review
 write_comment "$LINT_RESULTS_FILE"
+
+if [ "$ERRORS" != "0" ]
+then
+    echo "Failing the validation script because of validation errors."
+    exit $ERRORS
+fi
 
 
