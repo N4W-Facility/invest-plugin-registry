@@ -13,7 +13,7 @@ def main():
     )
     args = parser.parse_args()
 
-    with open(args.pyproject_toml) as f:
+    with open(args.pyproject_toml, 'rb') as f:
         config = tomllib.load(f)
 
     try:

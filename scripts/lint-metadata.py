@@ -224,7 +224,7 @@ def main(args=None):
     _write_to_file(json_errors)
 
     if (pyproject_errors is None and json_errors is None):
-        _write_to_file("✅ No errors found in the project!")
+        _write_to_file("✅ No errors found in the project!\n")
     else:
         error_vars = []
         for filename, var in [('pyproject.toml', pyproject_errors),
