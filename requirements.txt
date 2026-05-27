@@ -1,6 +1,7 @@
 requests
 sphinx
 sphinx-design-elements
+sphinx-tags
 furo
 validate-pyproject
 myst-parser
