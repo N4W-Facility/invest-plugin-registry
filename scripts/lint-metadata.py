@@ -114,14 +114,15 @@ def _validate_pyproject_file(filepath):
     # Required('project.authors/maintainers'): ,
     # Either or both project.authors, project.maintainers must be defined
     # The details are validated by validate_pyproject
-    both_found = True
+    one_found = False
     for attr in ['project.authors', 'project.maintainers']:
         try:
             _ = _get_pyproject_attr(pyproject_data, attr)
+            one_found = True
         except ValueError:
-            both_found = False
+            pass
 
-    if not both_found:
+    if not one_found:
         natcap_requirement_errors.append(
             "Either project.authors or project.maintainers (or both) must be "
             "defined in your pyproject.toml file")
