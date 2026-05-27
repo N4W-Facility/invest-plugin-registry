@@ -66,13 +66,27 @@ uv run --script scripts/lint-metadata.py \
   "plugins.json"
 ERRORS=$?
 
-# Post results to the PR for review
-write_comment "$LINT_RESULTS_FILE"
-
 if [ "$ERRORS" != "0" ]
 then
     echo "Failing the validation script because of validation errors."
+    write_comment "$LINT_RESULTS_FILE"  # post comments for the PR
     exit $ERRORS
 fi
 
 
+# compare versions
+VERSION_COMPARE="version_comparison.txt"
+python scripts/compare-versions.py \
+    "$REPO_URL/pyproject.toml" \
+    "$NEW_PLUGIN_DATA_FILE" \
+    "$VERSION_COMPARE"
+
+# now that linting has completed, extract plugin's information
+PLUGIN_INFO="plugin_info.md"
+python scripts/extract-plugin-info.py \
+    "$REPO_URL/pyproject.toml" \
+    "$PLUGIN_INFO"
+
+FINAL_FILE="final.md"
+cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$PLUGIN_INFO" >> "$FINAL_FILE"
+write_comment "$FINAL_FILE"
