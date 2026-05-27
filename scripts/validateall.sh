@@ -48,6 +48,7 @@ fi
 git clone "$REPO_URL" "$LOCAL_REPO_DIR"
 
 # Lint things
+set +e
 LINT_RESULTS_FILE=lint_results.txt
 uv run --script scripts/lint-metadata.py \
   --target-file "$LINT_RESULTS_FILE" \

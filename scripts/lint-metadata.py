@@ -40,7 +40,7 @@ def _get_pyproject_attr(tomldata, attr):
         if subattr not in subtomldata:
             # Raise an error to distinguish from returning the value itself.
             raise ValueError(
-                f"Pproject.toml attribute not found: {attr}")
+                f"Pyproject.toml attribute not found: {attr}")
         else:
             subtomldata = subtomldata[subattr]
 
@@ -76,7 +76,7 @@ def _validate_pyproject_file(filepath):
         # error.summary is the 1-line error message
         # error.details is the full, multi-hundred-line description
         # error.message has both error.summary, error.details.
-        return f"Could not load pyproject.toml: {error.summary}"
+        return f"❌ Could not load pyproject.toml: {error.summary}"
 
     natcap_requirement_errors = []
     attrs_to_validate = {
@@ -139,7 +139,7 @@ def _validate_project_json_file(filepath):
         with open(filepath, 'r') as project_json:
             json_data = json.load(project_json)
     except json.decoder.JSONDecodeError as error:
-        return f"Could not parse JSON file at {filepath}: {str(error)}"
+        return f"❌ Could not parse JSON file at {filepath}: {str(error)}"
 
     # We're assuming that the top-level object is an array
     issues = []
