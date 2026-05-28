@@ -88,7 +88,8 @@ def _validate_pyproject_file(filepath):
         Required('project.readme'): _is_nonempty,
         Required('project.license'): _is_nonempty,
         Required('project.license-files'): _is_nonempty,
-        Optional('tool.natcap.invest.registry_description'): _file_exists,
+        Optional('tool.natcap.invest.registry_description'): (
+            lambda path: _file_exists(f'repo/{path}')),
     }
     for attr, test_callable in attrs_to_validate.items():
         is_required = isinstance(attr, Required)
