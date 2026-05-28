@@ -123,7 +123,7 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
                 """)
     else:
         authors_maintainers = (
-            f"""
+            """
             |
             """)
 

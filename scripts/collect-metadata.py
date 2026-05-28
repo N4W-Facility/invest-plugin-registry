@@ -1,4 +1,10 @@
 """Collect and repackage project metadata."""
+# /// script
+# requires-python = ">=3.6"
+# dependencies = [
+#     "requests",
+# ]
+# ///
 import argparse
 import bz2
 import datetime
@@ -19,7 +25,6 @@ DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.json')
 DEFAULT_OUTDIR = os.path.join(REPO_ROOT, 'html')
 
 DESCRIPTION_OUTDIR = os.path.join(REPO_ROOT, 'source', 'plugins', 'partials')
-
 
 def _hashfile(filepath):
     sha = hashlib.sha256()
