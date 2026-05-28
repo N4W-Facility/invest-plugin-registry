@@ -4,5 +4,11 @@
     "version": "1.0.0",
     "plugin_type": "invest_model_variant",
     "keywords": ["RouteDEM", "hydrology", "streams", "routing"]
+  },
+  {
+    "repo_url": "https://github.com/natcap/ROOT.git",
+    "version": "2.0.0",
+    "plugin_type": "postprocessing",
+    "keywords": ["optimization", "landscape planning", "restoration"]
   }
 ]
