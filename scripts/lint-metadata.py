@@ -66,6 +66,7 @@ def _file_exists(filepath):
 
 def _validate_pyproject_file(filepath):
     validator = validate_pyproject.api.Validator()
+    pyproject_dir = os.path.dirname(filepath)
     with open(filepath, 'rb') as tomlfile:
         pyproject_data = tomllib.load(tomlfile)
 
@@ -89,7 +90,7 @@ def _validate_pyproject_file(filepath):
         Required('project.license'): _is_nonempty,
         Required('project.license-files'): _is_nonempty,
         Optional('tool.natcap.invest.registry_description'): (
-            lambda path: _file_exists(f'repo/{path}')),
+            lambda path: _file_exists(f'{pyproject_dir}/{path}')),
     }
     for attr, test_callable in attrs_to_validate.items():
         is_required = isinstance(attr, Required)
