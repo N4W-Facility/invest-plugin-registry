@@ -87,6 +87,22 @@ python scripts/extract-plugin-info.py \
     "$LOCAL_REPO_DIR/pyproject.toml" \
     "$PLUGIN_INFO"
 
+# Check that packages install and we can import all python files.
+#
+# miniconda is installed on github actions, so use that instead of mamba.
+CONDA_ENV=envvalidate
+ENV_FILENAME="environment.yml"
+if [ -e "$CONDA_ENV" ]
+then
+    rm -rf "$CONDA_ENV"
+fi
+python scripts/build-env-yaml.py "$LOCAL_REPO_DIR/pyproject.toml" "$ENV_FILENAME"
+conda create -p "./$CONDA_ENV" --file="$ENV_FILENAME"
+conda activate "$CONDA_ENV"
+
+#python scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml"
+
+
 FINAL_FILE="final.md"
 cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$PLUGIN_INFO" > "$FINAL_FILE"
 write_comment "$FINAL_FILE"
