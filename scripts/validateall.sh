@@ -97,12 +97,11 @@ then
     rm -rf "$CONDA_ENV"
 fi
 python scripts/build-env-yaml.py "$LOCAL_REPO_DIR/pyproject.toml" "$ENV_FILENAME"
-conda create -p "./$CONDA_ENV" --file="$ENV_FILENAME"
-conda activate "$CONDA_ENV"
+conda env create -p "./$CONDA_ENV" --file="$ENV_FILENAME"
 
-#python scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml"
-
+IMPORT_ERRORS="import-errors.txt"
+"$CONDA_ENV/bin/python" scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml" "$IMPORT_ERRORS"
 
 FINAL_FILE="final.md"
-cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$PLUGIN_INFO" > "$FINAL_FILE"
+cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$IMPORT_ERRORS" "$PLUGIN_INFO" > "$FINAL_FILE"
 write_comment "$FINAL_FILE"

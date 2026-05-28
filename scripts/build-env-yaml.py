@@ -9,6 +9,7 @@ channels:
 - conda-forge
 - defaults
 dependencies:
+- pip
 {condadeps}
 - pip:
 {pipdeps}
