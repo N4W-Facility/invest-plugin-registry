@@ -5,6 +5,9 @@
 # For local development, messages that would be written to the PR by github
 # actions are instead printed to the shell.
 #
+# Example call of this script, passing user, reponame, branch as parameters:
+#
+#   $ ./scripts/validateall.sh natcap invest-plugin-demo main
 
 
 # Expects $1 to be the filepath to the comment contents
@@ -30,6 +33,13 @@ set -x
 
 # Fail on first error
 set -e
+
+FORK_USER="$1"
+FORK_REPO="$2"
+FORK_BRANCH="$3"
+
+# We are assuming that this script is running from the main repo and within a PR
+curl -o plugins.json "https://raw.githubusercontent.com/${FORK_USER}/${FORK_REPO}/${FORK_BRANCH}/plugins.json"
 
 # Extract the new plugin information from plugins.json
 NEW_PLUGIN_DATA_FILE=new_plugin.json

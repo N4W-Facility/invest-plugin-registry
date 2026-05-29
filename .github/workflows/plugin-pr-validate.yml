@@ -41,4 +41,7 @@ jobs:
               run: |
                   set -ex  # fail script on first command failure.
 
-                  scripts/validateall.sh
+                  FORK_USER=$(gh pr view $PR_NUMBER --repo=$REPO --json author | jq -r .author.login)
+                  FORK_REPO=$(gh pr view $PR_NUMBER --repo=$REPO --json headRepository | jq -r .headRepository.name)
+                  FORK_BRANCH=$(gh pr view $PR_NUMBER --repo=$REPO --json headRefName | jq -r .headRefName)
+                  scripts/validateall.sh "$FORK_USER" "$FORK_REPO" "$FORK_BRANCH"
