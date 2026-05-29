@@ -21,7 +21,7 @@ jobs:
     start-plugin-contrib-pr:
         runs-on: ubuntu-latest
         env:
-            PR_NUMBER: ${{ github.event.number }}
+            PR_NUMBER: ${{ github.event.pull_request.number }}
             REPO: ${{ github.repository }}
             GH_TOKEN: ${{ github.token }}
         steps:
