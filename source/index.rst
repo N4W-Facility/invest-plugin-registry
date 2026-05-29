@@ -1,5 +1,5 @@
-InVEST Community Plugin Registry
-================================
+InVEST :sup:`®` Community Plugin Registry
+=========================================
 
 Welcome to the Community Plugin Registry! Here you can discover plugins for the Integrated
 Valuation of Ecosystem Services and Tradeoffs (InVEST) software. For more information,
@@ -16,7 +16,12 @@ use the search bar in the left column to search on keywords.
 If you find a plugin you'd like to use, you can install it from the InVEST Workbench. Take a
 look at the :ref:`Plugin Installation Docs <installing>` for more details.
 
-.. include:: docs/install_warning.rst
+.. note::
+   Plugins are developed by independent organizations and developers and the Natural Capital
+   Alliance does not take any responsibility for them. Bugs or feature requests relating to
+   plugins that are included in the Registry must be opened in their respective bug tracking
+   systems. A plugin's bug tracking system can be found on the information page for that
+   plugin.
 
 Contribute a plugin
 -------------------
@@ -35,9 +40,14 @@ to learn more.
 What is a plugin?
 -----------------
 
-Conceptually, an InVEST plugin is an ecosystem services model. Like the core InVEST
-models, it takes in data of various formats (usually including some geospatial data),
-processes that data, and produces output files that contain the results.
+Conceptually, an InVEST plugin is an ecosystem services model or performs functions related
+to ecosystem services modeling. A plugin could be a new stand-alone model, a variation on a
+model that already exists in core InVEST, or a workflow that composes multiple models to
+solve a domain-specific problem. A plugin could also perform pre-processing steps to prepare
+data for use in modeling, or post-processing steps on the outputs from another model.
+
+Like the core InVEST models, it takes in data of various formats (usually including some
+geospatial data), processes that data, and produces output files that contain the results.
 Unlike the core models, a plugin is not "official", i.e., not reviewed or maintained
 by NatCap. Plugins may be developed, used, and distributed totally independently of
 the ``natcap/invest`` repo and the Natural Capital Alliance.
@@ -99,10 +109,12 @@ If so, you might be interested in our machine-readable package index files:
    plugins/index
    docs/index
 
+   Code of Conduct <docs/code_of_conduct>
+
 .. toctree::
    :hidden:
    :caption: Links:
 
-   GitHub <https://github.com/natcap/invest-plugin-registry/>
+   Registry GitHub Repo <https://github.com/natcap/invest-plugin-registry/>
    Plugin Developer Docs <https://invest.readthedocs.io/en/latest/plugins.html>
    NatCap Community Forum <https://community.naturalcapitalalliance.org/latest>

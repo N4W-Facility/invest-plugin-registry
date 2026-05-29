@@ -19,7 +19,8 @@ install it from the InVEST Workbench.
 Contribution Policy
 -------------------
 
-The maintainers of the ``invest-plugin-registry`` repository will generally accept
+The maintainers of the ``invest-plugin-registry``
+`repository <https://github.com/natcap/invest-plugin-registry/>`_ will generally accept
 all contributed plugins. Community-contributed plugins are **not** reviewed for quality
 or accuracy. The purpose of this list is simply to facilitate plugin sharing and
 discovery. The inclusion of a plugin in this list does not guarantee anything about
@@ -166,7 +167,8 @@ Step 3: Fork the ``invest-plugin-registry`` repo and edit ``plugins.json``
 In this step, you will make the edits to the community plugin list that are needed for
 the inclusion of your plugin.
 
-To get set up, first `fork <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`_ the ``invest-plugin-registry`` repo on GitHub
+To get set up, first `fork <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`_ the ``invest-plugin-registry``
+`repo on GitHub <https://github.com/natcap/invest-plugin-registry/>`_.
 
 On your fork, add a new entry at the bottom of the ``plugins.json`` file: ::
 
@@ -264,7 +266,7 @@ Specifically, they will evaluate based on the following questions:
 * Does the plugin have documentation? Does the documentation look relevant to the plugin's
   description?
 * Is the plugin's name unique and appropriate? Does it adhere to the
-  `Community Guidelines <code_of_conduct>`_? (It's generally recommended to give your
+  `Code of Conduct <code_of_conduct.html>`_? (It's generally recommended to give your
   plugin a name that's related to what it does. Don't call your plugin "banana" unless
   it's modeling something about bananas!)
 
