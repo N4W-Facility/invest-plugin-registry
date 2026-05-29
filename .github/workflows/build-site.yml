@@ -20,11 +20,18 @@ jobs:
               run: |
                   make all
 
-            - name: Upload static files as artifact
+            - name: Upload site as pages artifact
               id: deployment
               uses: actions/upload-pages-artifact@v3
               with:
                   path: html/
+
+            - name: Upload docs as downloadable artifact
+              uses: actions/upload-artifact@v7
+              with:
+                  name: Website archive
+                  path: html/
+                  archive: true
 
     deploy:
         if: github.event_name == 'push'  # only deploy when pushed to main.
