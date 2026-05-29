@@ -29,7 +29,7 @@ jobs:
             - name: Upload docs as downloadable artifact
               uses: actions/upload-artifact@v7
               with:
-                  name: Website archive
+                  name: site-archive
                   path: html/
                   archive: true
 
