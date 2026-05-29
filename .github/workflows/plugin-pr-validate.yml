@@ -35,13 +35,31 @@ jobs:
             - name: Install uv
               uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
-            - name: Extract PR Number
-              run: echo "PR_NUMBER=${{ github.event.pull_request.number || github.event.number }}" >> $GITHUB_ENV
+            - name: Get PR Number from Commit
+              uses: actions/github-script@v9
+              id: get-pr
+              with:
+                  script: |
+                    // Query the GitHub API for PRs associated with this commit hash
+                    const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        commit_sha: context.sha,
+                    });
+
+                    if (prs.data.length > 0) {
+                        // Return the number of the first matching PR
+                        return prs.data[0].number;
+                    } else {
+                        core.setFailed("No associated PR found for this commit.");
+                    }
 
             - name: Extract the new plugin data and lint it
               shell: bash
               run: |
                   set -ex  # fail script on first command failure.
+
+                  PR_NUMBER="${{ steps.get-pr.outputs.result }}"
 
                   FORK_USER=$(gh pr view $PR_NUMBER --repo=$REPO --json author | jq -r .author.login)
                   FORK_REPO=$(gh pr view $PR_NUMBER --repo=$REPO --json headRepository | jq -r .headRepository.name)
