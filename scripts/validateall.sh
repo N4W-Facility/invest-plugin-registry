@@ -9,6 +9,7 @@
 
 # Expects $1 to be the filepath to the comment contents
 write_comment () {
+    cat "$1"
     # -z is true if the string has length 0.
     if [ -z "$GITHUB_ACTIONS" ];
     then
