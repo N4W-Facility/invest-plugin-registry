@@ -20,8 +20,8 @@ Please provide brief answers to the following questions, to help the reviewers q
 
 ## Acknowledgements and Disclosures
 
-- [ ] I have read the InVEST [Community Guidelines](https://natcap.github.io/invest-plugin-registry/docs/code_of_conduct.html) and attest that my plugin adheres to them.
-- [ ] I agree to allow metadata about the submitted plugin to be stored in perpetuity to allow for the persistence of open science and data 
+- [ ] I have read the InVEST [Code of Conduct](https://natcap.github.io/invest-plugin-registry/docs/code_of_conduct.html) and attest that my plugin adheres to it.
+- [ ] I agree to allow metadata about the submitted plugin to be stored in perpetuity to allow for the persistence of open science and data.
 
 **Did you use Generative AI in the development of your plugin?**
 

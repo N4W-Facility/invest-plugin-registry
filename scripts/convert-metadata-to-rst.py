@@ -159,6 +159,7 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
                 | **Source Code:** {plugin_metadata['github_repo']}
                 | **Current Version:** {plugin_metadata['version']}
                 | **Last Updated:** {plugin_metadata['date_last_updated']}
+                | **License**: {plugin_metadata['pyproject_toml']['project']['license']}
                 |
         """)
 
