@@ -1,5 +1,5 @@
-InVEST Community Plugin Registry
-================================
+InVEST :sup:`®` Community Plugin Registry
+=========================================
 
 Welcome to the Community Plugin Registry! Here you can discover plugins for the Integrated
 Valuation of Ecosystem Services and Tradeoffs (InVEST) software. For more information,
@@ -15,8 +15,6 @@ use the search bar in the left column to search on keywords.
 
 If you find a plugin you'd like to use, you can install it from the InVEST Workbench. Take a
 look at the :ref:`Plugin Installation Docs <installing>` for more details.
-
-.. include:: docs/install_warning.rst
 
 Contribute a plugin
 -------------------
@@ -99,10 +97,12 @@ If so, you might be interested in our machine-readable package index files:
    plugins/index
    docs/index
 
+   Code of Conduct <docs/code_of_conduct>
+
 .. toctree::
    :hidden:
    :caption: Links:
 
-   GitHub <https://github.com/natcap/invest-plugin-registry/>
+   Registry GitHub Repo <https://github.com/natcap/invest-plugin-registry/>
    Plugin Developer Docs <https://invest.readthedocs.io/en/latest/plugins.html>
    NatCap Community Forum <https://community.naturalcapitalalliance.org/latest>
