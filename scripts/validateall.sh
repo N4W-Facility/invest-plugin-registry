@@ -29,14 +29,14 @@ set -x
 set -e
 
 # We are assuming that this script is running from the main repo and within a PR
-curl -o plugins.json "https://raw.githubusercontent.com/natcap/invest-plugin-registry/main/plugins.json"
-cat plugins.json  # for debugging
+curl -o main_plugins.json "https://raw.githubusercontent.com/natcap/invest-plugin-registry/main/plugins.json"
+cat main_plugins.json  # for debugging
 
 # Extract the new plugin information from plugins.json
 NEW_PLUGIN_DATA_FILE=new_plugin.json
 uv run --script scripts/extract-modified-json.py \
   plugins.json \
-  main \
+  main_plugins.json \
   "$NEW_PLUGIN_DATA_FILE"
 cat "$NEW_PLUGIN_DATA_FILE"
 VERSION="$(jq --raw-output .version $NEW_PLUGIN_DATA_FILE)"
