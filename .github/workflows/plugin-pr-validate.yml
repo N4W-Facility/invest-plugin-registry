@@ -1,7 +1,7 @@
-name: Validate new plugin
+name: "Validate new plugin"
 
 on:
-    pull_request_target:
+    pull_request:
         types: [opened, reopened]
         paths:
             - 'plugins.json'
@@ -21,8 +21,10 @@ jobs:
     plugin-validation-pr:
         runs-on: ubuntu-latest
         env:
+            PR_NUMBER: ${{ github.event.number }}
             REPO: ${{ github.repository }}
             GH_TOKEN: ${{ github.token }}
+            TARGET_FILE: "validation-results.md"
         steps:
             - uses: actions/checkout@v4
 
@@ -35,33 +37,23 @@ jobs:
             - name: Install uv
               uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
-            - name: Get PR Number from Commit
-              uses: actions/github-script@v9
-              id: get-pr
-              with:
-                  script: |
-                    // Query the GitHub API for PRs associated with this commit hash
-                    const prs = await github.rest.repos.listPullRequestsAssociatedWithCommit({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        commit_sha: context.sha,
-                    });
-
-                    if (prs.data.length > 0) {
-                        // Return the number of the first matching PR
-                        return prs.data[0].number;
-                    } else {
-                        core.setFailed("No associated PR found for this commit.");
-                    }
-
             - name: Extract the new plugin data and lint it
               shell: bash
               run: |
                   set -ex  # fail script on first command failure.
 
-                  PR_NUMBER="${{ steps.get-pr.outputs.result }}"
+                  scripts/validateall.sh "$TARGET_FILE"
 
-                  FORK_USER=$(gh pr view $PR_NUMBER --repo=$REPO --json author | jq -r .author.login)
-                  FORK_REPO=$(gh pr view $PR_NUMBER --repo=$REPO --json headRepository | jq -r .headRepository.name)
-                  FORK_BRANCH=$(gh pr view $PR_NUMBER --repo=$REPO --json headRefName | jq -r .headRefName)
-                  scripts/validateall.sh "$FORK_USER" "$FORK_REPO" "$FORK_BRANCH"
+            - name: Record additional context for later comment
+              shell: bash
+              if: always()
+              run: |
+                  mkdir pr-data
+                  echo $PR_NUMBER > pr-data/pr-num.txt
+                  cp "$TARGET_FILE" pr-data/
+
+            - name: Upload artifact
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  path: pr-data
