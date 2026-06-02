@@ -43,7 +43,7 @@ def main():
 
     with open(args.target_markdown, 'w') as target_file:
         target_file.write(textwrap.dedent(
-            f"""\
+            f"""\n
             ### Metadata pulled from `pyproject.toml`
 
             *Plugin name*: {project_name}
