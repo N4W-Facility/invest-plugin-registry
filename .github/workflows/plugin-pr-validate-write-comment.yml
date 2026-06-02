@@ -8,6 +8,8 @@ on:
 jobs:
     write-pr-comment-with-validation-results:
         runs-on: ubuntu-latest
+        env:
+            GH_TOKEN: ${{ github.token }}
         steps:
             - name: Fetch file
               uses: actions/download-artifact@v8
