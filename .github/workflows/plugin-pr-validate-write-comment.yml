@@ -26,4 +26,7 @@ jobs:
                   VALIDATION_RESULTS=pr-data/validation-results.md
 
                   # Write the validation results to the PR
-                  gh pr comment "$PR_NUM" --body-file "$VALIDATION_RESULTS"
+                  gh pr comment \
+                        "$PR_NUM" \
+                        --body-file "$VALIDATION_RESULTS" \
+                        --repo ${{ github.repository }}
