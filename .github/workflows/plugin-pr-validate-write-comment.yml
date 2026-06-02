@@ -1,0 +1,27 @@
+name: "Write PR comment with validation results"
+
+on:
+    workflow_run:
+        workflows: ["Validate new plugin"]
+        types: [completed]
+
+jobs:
+    write-pr-comment-with-validation-results:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Fetch file
+              uses: actions/download-artifact@v8
+              with:
+                  path: pr-data
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+                  run-id: ${{ github.event.workflow_run.id }}
+
+            - name: Print file contents
+              run: |
+                  set -ex
+                  find .
+                  PR_NUM=$(cat pr-data/pr-num.txt)
+                  VALIDATION_RESULTS=pr-data/validation-results.md
+
+                  # Write the validation results to the PR
+                  gh pr comment "$PR_NUM" --body-file "$VALIDATION_RESULTS"

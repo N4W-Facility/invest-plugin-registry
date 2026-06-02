@@ -27,21 +27,17 @@ def _hashdict(source_dict):
 
 def main(args=None):
     parser = argparse.ArgumentParser()
-    parser.add_argument('plugins_json', default='plugins.json')  # filepath to the local plugins json
-    parser.add_argument('reference_git_ref', default='main')  # The head ref, e.g. main, of the reference file
+    parser.add_argument('pr_plugins_json', default='plugins.json')  # filepath to the local plugins json
+    parser.add_argument('reference_plugins_json', default='main_plugins.json')
     parser.add_argument('target_json', default='new_content.json')
 
     parsed_args = parser.parse_args(args)
 
-    reference_url = (
-        f'{RAW_REPO_PREFIX}/refs/heads/{parsed_args.reference_git_ref}'
-        '/plugins.json')
-    resp = requests.get(reference_url)
-    resp.raise_for_status()  # shouldn't error but you never know
-    reference_json = resp.json()
-    LOGGER.debug(f"Reference_json: {reference_json}")
+    with open(parsed_args.reference_plugins_json) as reference_json_file:
+        reference_json = json.load(reference_json_file)
+        LOGGER.debug(f"Reference json: {reference_json}")
 
-    with open(parsed_args.plugins_json) as pr_json_file:
+    with open(parsed_args.pr_plugins_json) as pr_json_file:
         pr_json = json.load(pr_json_file)
         LOGGER.debug(f"PR json: {pr_json}")
 

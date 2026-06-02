@@ -9,23 +9,17 @@
 #
 #   $ ./scripts/validateall.sh natcap invest-plugin-demo main
 
+# The file to write output to.  If not provided, will write to stdout.
+FILE="$1"
+if [ -z "$FILE" ]; then
+    FILE=/dev/stdout
+else
+    rm "$FILE"
+fi
 
-# Expects $1 to be the filepath to the comment contents
+# Param 1 to the function is the file with contents to write out.
 write_comment () {
-    cat "$1"
-    # -z is true if the string has length 0.
-    if [ -z "$GITHUB_ACTIONS" ];
-    then
-        set +x  # be nonexplicit
-        echo "########### SIMULATED PR COMMENT ##############"
-        cat "$1"
-        echo ""
-        echo "########### END SIMULATED PR COMMENT ##############"
-        set -x  # reenable explicitness
-    else
-        # We're in github actions, so post to the relevant PR.
-        gh pr comment "$PR_NUMBER" --body-file "$1"
-    fi
+    cat "$1" >> "$FILE"
 }
 
 # Be eXplicit about what's being run
@@ -34,18 +28,15 @@ set -x
 # Fail on first error
 set -e
 
-FORK_USER="$1"
-FORK_REPO="$2"
-FORK_BRANCH="$3"
-
 # We are assuming that this script is running from the main repo and within a PR
-curl -o plugins.json "https://raw.githubusercontent.com/${FORK_USER}/${FORK_REPO}/${FORK_BRANCH}/plugins.json"
+curl -o main_plugins.json "https://raw.githubusercontent.com/natcap/invest-plugin-registry/main/plugins.json"
+cat main_plugins.json  # for debugging
 
 # Extract the new plugin information from plugins.json
 NEW_PLUGIN_DATA_FILE=new_plugin.json
 uv run --script scripts/extract-modified-json.py \
   plugins.json \
-  main \
+  main_plugins.json \
   "$NEW_PLUGIN_DATA_FILE"
 cat "$NEW_PLUGIN_DATA_FILE"
 VERSION="$(jq --raw-output .version $NEW_PLUGIN_DATA_FILE)"
