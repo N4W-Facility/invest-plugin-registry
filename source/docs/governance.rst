@@ -27,9 +27,17 @@ Registry governance that may arise.
 Current Reviewer Pool Members:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-{list of names or GH handles – currently: Lisa, Peter, Eric}
+- Lisa Mandle (:octicon:`mark-github` `lmandle <https://github.com/lmandle>`_)
+- Peter Hawthorne (:octicon:`mark-github` `phawthorne <https://github.com/phawthorne>`_)
+- Eric Lonsdorf
 
 NatCap Stanford Software Team:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-{list of names or GH handles}
+- Doug Denu (:octicon:`mark-github` `dcdenu4 <https://github.com/dcdenu4>`_)
+- James Douglass (:octicon:`mark-github` `phargogh <https://github.com/phargogh>`_)
+- Dave Fisher (:octicon:`mark-github` `davemfish <https://github.com/davemfish>`_)
+- Emily Soth (:octicon:`mark-github` `emlys <https://github.com/emlys>`_)
+- Emily Davis (:octicon:`mark-github` `emilyanndavis <https://github.com/emilyanndavis>`_)
+- Claire Simpson (:octicon:`mark-github` `claire-simpson <https://github.com/claire-simpson>`_)
+- Megan Nissel (:octicon:`mark-github` `megannissel <https://github.com/megannissel>`_)
