@@ -21,7 +21,13 @@ import re
 import sys
 import tomllib
 
-import requests
+if 'pyodide' in sys.modules:
+    from pyodide.http.pyxhr import get
+    from pyodide.http.pyxhr import head
+else:
+    from requests import get
+    from requests import head
+
 import validate_pyproject.api  # requires packaging>=24.2 for enforcement.
 
 logging.basicConfig(level=logging.DEBUG)
@@ -49,9 +55,12 @@ def _get_pyproject_attr(tomldata, attr):
 
 
 def _test_url(url):
-    req = requests.head(url)
-    if not req.ok:
-        return f"Could not load URL {url}"
+    if 'pyodide' in sys.modules:
+        return f"ℹ️  Cannot test URL in browser: {url}"
+    else:
+        req = head(url)
+        if not req.ok:
+            return f"Could not load URL {url}"
 
 
 def _is_nonempty(s):
@@ -61,7 +70,7 @@ def _is_nonempty(s):
 
 def _file_exists(filepath):
     if filepath.startswith('https://'):
-        resp = requests.head(filepath)
+        resp = head(filepath)
         if not resp.ok:
             return f"Could not find file at {filepath}"
     if not os.path.exists(filepath):
@@ -73,7 +82,7 @@ def _validate_pyproject_file(filepath):
     pyproject_dir = os.path.dirname(filepath)
 
     if filepath.startswith('https://'):
-        req = requests.get(filepath)
+        req = get(filepath)
         pyproject_data = tomllib.loads(req.text)
     else:
         with open(filepath, 'rb') as tomlfile:
@@ -158,7 +167,7 @@ def _validate_project_json_file(filepath):
     for object_num, plugin_data in enumerate(json_data):
         if "repo_url" in plugin_data:
             url = plugin_data['repo_url']
-            req = requests.head(url)
+            req = head(url)
             if not req.ok:
                 issues.append(f"URL {url} could not be found")
         else:
