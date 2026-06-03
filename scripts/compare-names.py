@@ -22,20 +22,20 @@ def main(args=None):
     new_name = new_plugin_data['plugin_name'].lower()
     existing_names = [plugin['plugin_name'].lower() for plugin in main_plugins_data]
     matches = difflib.get_close_matches(new_name, existing_names, cutoff=0.85)
-    if matches:
-        best_match = matches[0]
-        score = difflib.SequenceMatcher(None, new_name, best_match).ratio()
-        if score == 1.0:
-            message = "❌ plugin has the same name as an existing plugin\n"
-        else:
-            message = (
-                "ℹ️  plugin name was found to be similar to existing plugin name(s): "
-                f"{matches}\n")
-    else:
-        message = "✅ plugin name is unique!\n"
 
     with open(parsed_args.TARGET_FILE, 'w') as target_file:
-        target_file.write(message)
+        if matches:
+            best_match = matches[0]
+            score = difflib.SequenceMatcher(None, new_name, best_match).ratio()
+            if score == 1.0:
+                target_file.write("❌ plugin has the same name as an existing plugin\n")
+                parser.exit(1, "Failing because plugin name is not unique")
+            else:
+                target_file.write(
+                    "ℹ️  plugin name was found to be similar to existing plugin name(s): "
+                    f"{matches}\n")
+        else:
+            target_file.write("✅ plugin name is unique!\n")
 
 
 if __name__ == "__main__":
