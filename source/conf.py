@@ -54,6 +54,7 @@ html_theme = 'furo'  # pip install furo
 html_favicon = "_static/favicon.png"
 html_title = "InVEST Plugin Registry"
 html_static_path = ['_static']
+html_js_files = ["pyodide-linting.js"]
 html_theme_options = {
     'light_logo': 'alliance-logo-full-color.png',
     'dark_logo': 'alliance-logo-full-white.png',
