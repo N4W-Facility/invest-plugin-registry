@@ -174,6 +174,7 @@ On your fork, add a new entry at the bottom of the ``plugins.json`` file: ::
 
     {
          "repo_url": "https://github.com/natcap/invest-routedem-tfa-range.git",
+         "plugin_name": "RouteDEM with TFA Range",
          "version": "1.0.0",
          "plugin_type": "invest_model_variant",
          "keywords": ["RouteDEM", "hydrology", "streams", "routing"]
@@ -181,6 +182,13 @@ On your fork, add a new entry at the bottom of the ``plugins.json`` file: ::
 
 * Remember to add a comma after the closing curly bracket, ``}``, of the previous entry!
 * ``repo_url`` should be the ``https`` URL of your repository.
+* ``plugin_name`` should be the display name you want to use for your plugin on the
+  Registry. This value must be unique in the Community Plugins list.
+
+  * **NOTE**: It's strongly recommended to use the same name for ``plugin_name`` that
+    you used for the ``model_title`` attribute in your ``MODEL_SPEC``, since the
+    ``model_title`` is what will be displayed in the Workbench.
+
 * For ``version``, use the tag associated with your release from
   :ref:`Step 2 <create_release>`. Remember that semantic versioning is required; this
   version should match the format ``x.y.z``.

@@ -1,6 +1,7 @@
 [
   {
     "repo_url": "https://github.com/natcap/invest-routedem-tfa-range.git",
+    "plugin_name": "RouteDEM with TFA Range",
     "version": "1.0.0",
     "plugin_type": "invest_model_variant",
     "keywords": ["RouteDEM", "hydrology", "streams", "routing"]
