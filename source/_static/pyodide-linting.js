@@ -1,4 +1,4 @@
-let pyodideEnv;
+//let pyodideEnv;
 
 // 2. Initialize Pyodide on page load
 async function initPyodide() {
@@ -17,7 +17,7 @@ async function initPyodide() {
 				// Enable the action button once the environment is completely ready
 				document.getElementById("output").innerText = "Environment ready!";
 				const btn = document.getElementById("runBtn");
-				btn.innerText = "Run Python Script";
+				btn.innerText = "Run validation";
 				btn.disabled = false;
 
 		} catch (err) {
@@ -38,7 +38,12 @@ async function executePythonScript() {
 				// runPythonAsync returns the evaluated result of the last line/expression
 				await pyodideEnv.runPython(pythonCode);
 				const validateFunc = pyodideEnv.globals.get('_validate_pyproject_file');
-				const result = validateFunc("https://raw.githubusercontent.com/natcap/ROOT/refs/heads/main/pyproject.toml");
+				const githubUser = document.getElementById("githubusername").value;
+				const githubRepo = document.getElementById("githubrepo").value;
+				const githubRef = document.getElementById("githubref").value;
+				const tomlpath = `https://raw.githubusercontent.com/${githubUser}/${githubRepo}/refs/heads/${githubRef}/pyproject.toml`;
+				console.log(`Validating tomlpath ${tomlpath}`);
+				const result = validateFunc(tomlpath);
 				document.getElementById("output").innerText = result;
 		} catch (err) {
 				document.getElementById("output").innerText = `Python Runtime Error:\n${err.message}`;
