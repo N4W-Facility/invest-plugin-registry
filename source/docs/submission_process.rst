@@ -99,7 +99,7 @@ The following keys are required for inclusion in the community plugin registry:
   * ``Issues``: The link to your preferred issue tracker. This could be the repo's Issues
     page, or it could be something else. Many users of InVEST often look to the
     `NatCap Forum <https://community.naturalcapitalalliance.org/latest>`_ for help, so if
-    you'd like to engage with users of your plugin on the Forum, that's also an option! 
+    you'd like to engage with users of your plugin on the Forum, that's also an option!
   * ``Documentation``: The link to your plugin documentation. It's fine if this URL points
     to your README.
 
@@ -133,6 +133,13 @@ with your plugin, as well as any funding source(s) that contributed to its creat
 ----
 
 .. _host_plugin:
+
+Step 0: Test your pyproject.toml with our browser-based linter
+--------------------------------------------------------------
+
+We have a browser-based validation tool that runs the same validation script
+against your ``pyproject.toml`` as will run in in an open pull request, which
+is available at :doc:`linting`.
 
 Step 1: Make your plugin available on GitHub or GitLab
 ------------------------------------------------------

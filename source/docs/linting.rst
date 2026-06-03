@@ -1,9 +1,10 @@
 
-Linting Your Plugin's pyproject.toml
-====================================
+In-Browser Linting
+==================
 
 To lint your project's pyproject.toml before submitting a PR, just run our
-handy linter below, built with Pyodide.
+handy linter below, built with Pyodide.  Validation messages related to you
+``pyproject.toml`` file will appear just below the inputs.
 
 
 .. raw:: html
