@@ -148,8 +148,8 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
     # Construct the template
     template_start = (
         f"""
-        {project_name}
-        {'='*len(project_name)}
+        {plugin_metadata['plugin_name']}
+        {'='*len(plugin_metadata['plugin_name'])}
 
         .. info-card::
 

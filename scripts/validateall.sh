@@ -76,6 +76,13 @@ then
 fi
 
 
+# check name uniqueness
+NAME_COMPARE="name_comparison.txt"
+python scripts/compare-names.py \
+    "$NEW_PLUGIN_DATA_FILE" \
+    main_plugins.json \
+    "$NAME_COMPARE"
+
 # compare versions
 VERSION_COMPARE="version_comparison.txt"
 python scripts/compare-versions.py \
@@ -87,6 +94,7 @@ python scripts/compare-versions.py \
 PLUGIN_INFO="plugin_info.md"
 python scripts/extract-plugin-info.py \
     "$LOCAL_REPO_DIR/pyproject.toml" \
+    "$NEW_PLUGIN_DATA_FILE" \
     "$PLUGIN_INFO"
 
 # Check that packages install and we can import all python files.
@@ -105,5 +113,5 @@ IMPORT_ERRORS="import-errors.txt"
 "$CONDA_ENV/bin/python" scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml" "$IMPORT_ERRORS"
 
 FINAL_FILE="final.md"
-cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$IMPORT_ERRORS" "$PLUGIN_INFO" > "$FINAL_FILE"
+cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$NAME_COMPARE" "$IMPORT_ERRORS" "$PLUGIN_INFO" > "$FINAL_FILE"
 write_comment "$FINAL_FILE"

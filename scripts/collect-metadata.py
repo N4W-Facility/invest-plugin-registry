@@ -18,6 +18,8 @@ import tomllib
 
 import requests
 
+from utils import construct_base_url
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 REPO_ROOT = os.path.join(os.path.dirname(__file__), '..')
@@ -55,16 +57,6 @@ def _version_info(host, org, repo, version):
     return sha, date
 
 
-def _construct_url(host, org, repo, version):
-    if 'github.com' in host:
-        base_api_url = f"https://raw.githubusercontent.com/{org}/{repo}/refs/tags/{version}/FILENAME"
-
-    else:
-        base_api_url = f"https://{host}/api/v4/projects/{org}%2F{repo}/repository/files/FILENAME/raw?ref={version}"
-
-    return base_api_url
-
-
 def main(args=None):
     parser = argparse.ArgumentParser("collect-metadata.py")
     parser.add_argument('--pluginslist', default=DEFAULT_PLUGINS_FILE,
@@ -91,7 +83,7 @@ def main(args=None):
 
         _, _, host, org, repo = re.sub(r'\.git$', '', plugin_git_url).split('/')
 
-        base_url = _construct_url(host, org, repo, plugin_version)
+        base_url = construct_base_url(plugin_git_url, plugin_version)
 
         pyproject_url = base_url.replace('FILENAME', 'pyproject.toml')
         LOGGER.debug(f"Getting toml {pyproject_url}")
@@ -127,7 +119,8 @@ def main(args=None):
             'date_last_updated': tag_date,
             'plugin_type': plugin['plugin_type'],
             'keywords': plugin['keywords'],
-            'description_path': description_partial
+            'description_path': description_partial,
+            'plugin_name': plugin['plugin_name']
         }
 
     metadata_object = {

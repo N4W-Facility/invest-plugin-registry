@@ -156,6 +156,11 @@ def _validate_project_json_file(filepath):
             issues.append(
                 f"Plugin {object_num} is missing the attribute 'repo_url'")
 
+        # Confirm the plugin name exists; uniqueness checked in a later step
+        if "plugin_name" not in plugin_data:
+            issues.append(
+                f"Plugin {object_num} is missing the attribute 'plugin_name'")
+
         if "version" in plugin_data:
             if not re.match('^[0-9]+.[0-9]+.[0-9]+$',
                             str(plugin_data['version'])):
