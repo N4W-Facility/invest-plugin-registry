@@ -74,7 +74,7 @@ def _validate_pyproject_file(filepath):
 
     if filepath.startswith('https://'):
         req = requests.get(filepath)
-        pyproject_data = tomllib.loads(req.text())
+        pyproject_data = tomllib.loads(req.text)
     else:
         with open(filepath, 'rb') as tomlfile:
             pyproject_data = tomllib.load(tomlfile)
