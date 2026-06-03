@@ -60,6 +60,10 @@ def _is_nonempty(s):
 
 
 def _file_exists(filepath):
+    if filepath.startswith('https://'):
+        resp = requests.head(filepath)
+        if not resp.ok:
+            return f"Could not find file at {filepath}"
     if not os.path.exists(filepath):
         return f"Could not find local file {filepath}"
 
@@ -67,8 +71,13 @@ def _file_exists(filepath):
 def _validate_pyproject_file(filepath):
     validator = validate_pyproject.api.Validator()
     pyproject_dir = os.path.dirname(filepath)
-    with open(filepath, 'rb') as tomlfile:
-        pyproject_data = tomllib.load(tomlfile)
+
+    if filepath.startswith('https://'):
+        req = requests.get(filepath)
+        pyproject_data = tomllib.loads(req.text())
+    else:
+        with open(filepath, 'rb') as tomlfile:
+            pyproject_data = tomllib.load(tomlfile)
 
     # Check for the standard pyproject.toml validation requirements
     try:
@@ -241,4 +250,7 @@ def main(args=None):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    # If pyodide is running in sys.modules, ignore the main() function since we
+    # want to import and run specific functions from this script.
+    if 'pyodide' not in sys.modules:
+        main(sys.argv[1:])
