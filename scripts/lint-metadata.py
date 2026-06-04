@@ -54,6 +54,17 @@ def _get_pyproject_attr(tomldata, attr):
     return subtomldata
 
 
+def _write_pyproject_attr(tomldata, attr, new_value):
+    subtomldata = tomldata
+    keys_list = attr.split('.')
+    max_depth = len(keys_list) - 1
+    for depth, subattr in enumerate(keys_list):
+        if subattr not in subtomldata and depth == max_depth:
+            subtomldata[subattr] = new_value
+        else:
+            subtomldata = subtomldata[subattr]
+
+
 def _test_url(url):
     if 'pyodide' in sys.modules:
         return f"ℹ️  Cannot test URL in browser: {url}"
