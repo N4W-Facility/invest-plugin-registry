@@ -15,7 +15,7 @@ async function initPyodide() {
 				await micropip.install(["packaging>=24.2", "requests", "pyodide-http", "validate_pyproject"]);
 
 				// Enable the action button once the environment is completely ready
-				document.getElementById("output").innerText = "Environment ready!";
+				document.getElementById("output").innerText = "Linter ready!";
 				const btn = document.getElementById("runBtn");
 				btn.innerText = "Run validation";
 				btn.disabled = false;
