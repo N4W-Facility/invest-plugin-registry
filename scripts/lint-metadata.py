@@ -33,7 +33,7 @@ else:
 
 import validate_pyproject.api  # requires packaging>=24.2 for enforcement.
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 ALLOWED_PLUGIN_TYPES = [
@@ -226,7 +226,7 @@ def _validate_pyproject_file(filepath):
                     'Pyproject.toml is missing the required attribute '
                     f'{attrname}')
             else:
-                LOGGER.debug(f"Attribute {attrname} is optional and not "
+                LOGGER.info(f"Attribute {attrname} is optional and not "
                              "provided; skipping")
             continue
 
