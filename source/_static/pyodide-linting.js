@@ -1,14 +1,14 @@
-//let pyodideEnv;
+const pyodideReady = loadPyodide()
 
 // 2. Initialize Pyodide on page load
 async function initPyodide() {
 		try {
 				// Initialize the main WebAssembly Python runtime
-				pyodideEnv = await loadPyodide();
+				const pyodide = await pyodideReady;
 
 				// Load micropip to manage package installations from PyPI
-				await pyodideEnv.loadPackage("micropip");
-				const micropip = pyodideEnv.pyimport("micropip");
+				await pyodide.loadPackage("micropip");
+				const micropip = pyodide.pyimport("micropip");
 
 				// Install requests and the essential pyodide-http patch library
 				document.getElementById("output").innerText = "Installing packages from PyPI...";
@@ -22,6 +22,7 @@ async function initPyodide() {
 
 		} catch (err) {
 				document.getElementById("output").innerText = `Initialization failed: ${err.message}`;
+			  console.log(err.message);
 		}
 }
 
@@ -36,8 +37,8 @@ async function executePythonScript() {
 
 		try {
 				// runPythonAsync returns the evaluated result of the last line/expression
-				await pyodideEnv.runPython(pythonCode);
-				const validateFunc = pyodideEnv.globals.get('_validate_pyproject_file');
+				await pyodide.runPython(pythonCode);
+				const validateFunc = pyodide.globals.get('_validate_pyproject_file');
 			  const gitHost = document.getElementById("githost").value;
 				const githostUser = document.getElementById("githostusername").value;
 				const githostRepo = document.getElementById("githostrepo").value;
