@@ -257,7 +257,8 @@ def _validate_pyproject_file(filepath):
             f"{filepath} was found to have validation errors:\n"
             + "\n".join(f"❌ {issue}" for issue in natcap_requirement_errors))
 
-    return "guess it ran through?"
+    if 'pyodide' in sys.modules:
+        return "✅ No validation errors found in pyproject.toml!"
 
 
 def _validate_project_json_file(filepath):
