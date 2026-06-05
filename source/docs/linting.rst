@@ -6,6 +6,10 @@ To lint your project's pyproject.toml before submitting a PR, just run our
 handy linter below, built with Pyodide.  Validation messages related to you
 ``pyproject.toml`` file will appear just below the inputs.
 
+.. note::
+	 Only ``github.com``, ``gitlab.com`` and self-hosted Gitlab instances are
+	 supported by the plugins registry at this time.
+
 
 .. raw:: html
 
@@ -14,14 +18,17 @@ handy linter below, built with Pyodide.  Validation messages related to you
 			<tr>
 				<td><label for="githost">Git Host</label></td>
 				<td><input type="text" id="githost" name="githost"></td>
+				<td>e.g. github.com, gitlab.com, code.stanford.edu</td>
 			</tr>
 			<tr>
 				<td><label for="githostusername">User/org</label></td>
 				<td><input type="text" id="githostusername" name="githostusername"></td>
+				<td>The user or org that owns the repository.</td>
 			</tr>
 			<tr>
 				<td><label for="githostrepo">Repo name</label></td>
 				<td><input type="text" id="githostrepo" name="githostrepo"></td>
+				<td>The name of the repository (no spaces)</td>
 			</tr>
 			<tr>
 	   			<td><label for="gitref">Branch name</label></td>
