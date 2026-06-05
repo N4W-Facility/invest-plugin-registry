@@ -36,6 +36,9 @@ async function executePythonScript() {
 `;
 
 		try {
+				// Initialize the main WebAssembly Python runtime
+				const pyodide = await pyodideReady;
+
 				// runPythonAsync returns the evaluated result of the last line/expression
 				await pyodide.runPython(pythonCode);
 				const validateFunc = pyodide.globals.get('_validate_pyproject_file');
@@ -59,6 +62,7 @@ async function executePythonScript() {
 				document.getElementById("output").innerText = result;
 		} catch (err) {
 				document.getElementById("output").innerText = `Python Runtime Error:\n${err.message}`;
+			  console.log(err);
 		}
 }
 

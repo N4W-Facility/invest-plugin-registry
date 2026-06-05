@@ -36,7 +36,7 @@ handy linter below, built with Pyodide.  Validation messages related to you
 			</tr>
 		</table>
        	<button id="runBtn">Loading linting environment...</button>
-       	<pre id="output">Loading linting dependencies ...</pre>
+       	<pre id="output">Setting up linter ...</pre>
    </div>
 
    <script src="https://cdn.jsdelivr.net/pyodide/v0.29.4/full/pyodide.js"></script>
