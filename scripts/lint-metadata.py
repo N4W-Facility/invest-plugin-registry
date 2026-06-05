@@ -253,6 +253,10 @@ def _validate_project_json_file(filepath):
     except json.decoder.JSONDecodeError as error:
         return f"❌ Could not parse JSON file at {filepath}: {str(error)}"
 
+    assert isinstance(json_data, list), (
+        "The JSON file provided should be an array of all the project data in "
+        "the registry.  The top-level object should be an array, but isn't.")
+
     # We're assuming that the top-level object is an array
     issues = []
     for object_num, plugin_data in enumerate(json_data):
