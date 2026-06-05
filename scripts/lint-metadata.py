@@ -62,7 +62,7 @@ def _write_pyproject_attr(tomldata, attr, new_value):
     keys_list = attr.split('.')
     max_depth = len(keys_list) - 1
     for depth, subattr in enumerate(keys_list):
-        if subattr not in subtomldata and depth == max_depth:
+        if depth == max_depth:
             subtomldata[subattr] = new_value
         else:
             subtomldata = subtomldata[subattr]
