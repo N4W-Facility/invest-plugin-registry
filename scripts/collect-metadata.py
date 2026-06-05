@@ -82,6 +82,7 @@ def _check_url_cache(url):
         json_data = resp.json()
         with open(cache_file, 'w') as cache_json:
             json.dump(json_data, cache_json)
+        LOGGER.info(f"Saved API data to cache: {url}")
     else:
         with open(cache_file, 'r') as cache_json:
             try:
@@ -90,6 +91,7 @@ def _check_url_cache(url):
                 cache_json.seek(0)
                 print(cache_json.read())
                 raise
+        LOGGER.info(f"Loaded API data from cache: {url}")
     return json_data
 
 
