@@ -38,10 +38,21 @@ async function executePythonScript() {
 				// runPythonAsync returns the evaluated result of the last line/expression
 				await pyodideEnv.runPython(pythonCode);
 				const validateFunc = pyodideEnv.globals.get('_validate_pyproject_file');
-				const githubUser = document.getElementById("githubusername").value;
-				const githubRepo = document.getElementById("githubrepo").value;
-				const githubRef = document.getElementById("githubref").value;
-				const tomlpath = `https://raw.githubusercontent.com/${githubUser}/${githubRepo}/refs/heads/${githubRef}/pyproject.toml`;
+			  const gitHost = document.getElementById("githost").value;
+				const githostUser = document.getElementById("githostusername").value;
+				const githostRepo = document.getElementById("githostrepo").value;
+				const gitRef = document.getElementById("gitref").value;
+
+			  const githubPattern = /github\.com/;
+			  let tomlpath;
+				if (githubPattern.test(gitHost)) {
+					tomlpath = `https://raw.githubusercontent.com/${githostUser}/${githostRepo}/refs/heads/${gitRef}/pyproject.toml`;
+				} else {
+					// Assume gitlab.  Other git hosts could come later.
+					// Public gitlab-hosted repos don't have CORS headers on the `raw` urls, so we need to use the API instead.
+					// We can only access data from public with the required CORS headers
+					tomlpath = `https://${gitHost}/api/v4/projects/${githostUser}%2F${githostRepo}/repository/files/pyproject.toml/raw?ref=${gitRef}`;
+				}
 				console.log(`Validating tomlpath ${tomlpath}`);
 				const result = validateFunc(tomlpath);
 				document.getElementById("output").innerText = result;

@@ -12,16 +12,20 @@ handy linter below, built with Pyodide.  Validation messages related to you
    <div id="custom-container">
 		<table>
 			<tr>
-				<td><label for="githubusername">Github username</label></td>
-				<td><input type="text" id="githubusername" name="githubusername"></td>
+				<td><label for="githost">Git Host</label></td>
+				<td><input type="text" id="githost" name="githost"></td>
 			</tr>
 			<tr>
-				<td><label for="githubrepo">Github repo</label></td>
-				<td><input type="text" id="githubrepo" name="githubrepo"></td>
+				<td><label for="githostusername">User/org</label></td>
+				<td><input type="text" id="githostusername" name="githostusername"></td>
 			</tr>
 			<tr>
-	   			<td><label for="githubref">Github ref (e.g. main)</label></td>
-				<td><input type="text" id="githubref" name="githubref" value="main"></td>
+				<td><label for="githostrepo">Repo name</label></td>
+				<td><input type="text" id="githostrepo" name="githostrepo"></td>
+			</tr>
+			<tr>
+	   			<td><label for="gitref">Branch name</label></td>
+				<td><input type="text" id="gitref" name="gitref" value="main"></td>
 			</tr>
 		</table>
        	<button id="runBtn">Loading linting environment...</button>

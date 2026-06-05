@@ -20,6 +20,9 @@ import os
 import re
 import sys
 import tomllib
+from urllib.parse import urljoin
+from urllib.parse import urlparse
+from urllib.parse import urlsplit
 
 if 'pyodide' in sys.modules:
     from pyodide.http.pyxhr import get
@@ -67,7 +70,8 @@ def _write_pyproject_attr(tomldata, attr, new_value):
 
 def _test_url(url):
     if 'pyodide' in sys.modules:
-        return f"ℹ️  Cannot test URL in browser: {url}"
+        # ℹ️  Cannot test URL in pyodide environment due to CORS restrictions
+        return None
     else:
         req = head(url)
         if not req.ok:
@@ -88,16 +92,81 @@ def _file_exists(filepath):
         return f"Could not find local file {filepath}"
 
 
+def _load_pyproject_toml(filepath_or_url):
+    """Load a pyproject.toml file.
+
+    If there are any linked files, those are loaded too.
+
+    Args:
+        filepath_or_url (str): The local filepath or URL to a
+            pyproject.toml file.
+
+    Returns:
+        tomldata (dict): The loaded dictionary with toml data.
+    """
+    is_url = filepath_or_url.startswith('https://')
+
+    if is_url:
+        parsed_url = urlparse(filepath_or_url)
+        is_gitlab = (
+            '/api/v4/projects/'in filepath_or_url and
+            parsed_url.netloc != 'github.com')
+
+        req = get(filepath_or_url)
+        try:
+            pyproject_data = tomllib.loads(req.text)
+        except tomllib.TOMLDecodeError as e:
+            print(f"Could not parse file: {str(e)} at {filepath_or_url}")
+            print(req.text)
+            raise e
+        pyproject_dir = os.path.dirname(urlsplit(filepath_or_url).path)
+    else:
+        pyproject_dir = os.path.dirname(filepath_or_url)
+        with open(filepath_or_url, 'rb') as tomlfile:
+            pyproject_data = tomllib.load(tomlfile)
+
+    # Any other attributes that we expect to be files, just include them here
+    # in this list.
+    for attrname in [
+            'project.readme',
+            'project.license-files',
+            'tool.natcap.invest.registry_description',
+            ]:
+        try:
+            filenames = _get_pyproject_attr(pyproject_data, attrname)
+            if not isinstance(filenames, list):
+                filenames = [filenames]
+
+            for filename in filenames:
+                if is_url:
+                    if is_gitlab:
+                        # There are parameters to worry about, so handle those
+                        # with a simplistic find/replace
+                        new_url = filepath_or_url.replace(
+                            'files/pyproject.toml/raw',
+                            f'files/{filename}/raw')
+                    else:
+                        # It's github, we can just urljoin the new file to the
+                        # url.
+                        new_url = urljoin(filepath_or_url, filename)
+                    resp = get(new_url)
+                    _write_pyproject_attr(
+                        pyproject_data, attrname, resp.text)
+                else:
+                    filename = os.path.join(pyproject_dir, filename)
+                    if os.path.exists(filename):
+                        with open(filename) as opened_file:
+                            _write_pyproject_attr(
+                                pyproject_data, attrname, opened_file.read())
+        except ValueError:
+            continue
+    return pyproject_data
+
+
 def _validate_pyproject_file(filepath):
     validator = validate_pyproject.api.Validator()
-    pyproject_dir = os.path.dirname(filepath)
 
-    if filepath.startswith('https://'):
-        req = get(filepath)
-        pyproject_data = tomllib.loads(req.text)
-    else:
-        with open(filepath, 'rb') as tomlfile:
-            pyproject_data = tomllib.load(tomlfile)
+    pyproject_data = _load_pyproject_toml(filepath)
 
     # Check for the standard pyproject.toml validation requirements
     try:
@@ -118,8 +187,7 @@ def _validate_pyproject_file(filepath):
         Required('project.readme'): _is_nonempty,
         Required('project.license'): _is_nonempty,
         Required('project.license-files'): _is_nonempty,
-        Optional('tool.natcap.invest.registry_description'): (
-            lambda path: _file_exists(f'{pyproject_dir}/{path}')),
+        Optional('tool.natcap.invest.registry_description'): _is_nonempty,
     }
     for attr, test_callable in attrs_to_validate.items():
         is_required = isinstance(attr, Required)
