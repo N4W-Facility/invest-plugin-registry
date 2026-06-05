@@ -134,32 +134,44 @@ def _load_pyproject_toml(filepath_or_url):
             ]:
         try:
             filenames = _get_pyproject_attr(pyproject_data, attrname)
-            if not isinstance(filenames, list):
-                filenames = [filenames]
-
-            for filename in filenames:
-                if is_url:
-                    if is_gitlab:
-                        # There are parameters to worry about, so handle those
-                        # with a simplistic find/replace
-                        new_url = filepath_or_url.replace(
-                            'files/pyproject.toml/raw',
-                            f'files/{filename}/raw')
-                    else:
-                        # It's github, we can just urljoin the new file to the
-                        # url.
-                        new_url = urljoin(filepath_or_url, filename)
-                    resp = get(new_url)
-                    _write_pyproject_attr(
-                        pyproject_data, attrname, resp.text)
-                else:
-                    filename = os.path.join(pyproject_dir, filename)
-                    if os.path.exists(filename):
-                        with open(filename) as opened_file:
-                            _write_pyproject_attr(
-                                pyproject_data, attrname, opened_file.read())
         except ValueError:
+            print(f"No value at {attrname}")
             continue
+
+        if not isinstance(filenames, list):
+            filenames = [filenames]
+
+        output_data_list = []
+        for filename in filenames:
+            if is_url:
+                if is_gitlab:
+                    # There are parameters to worry about, so handle those
+                    # with a simplistic find/replace
+                    new_url = filepath_or_url.replace(
+                        'files/pyproject.toml/raw',
+                        f'files/{filename}/raw')
+                else:
+                    # It's github, we can just urljoin the new file to the
+                    # url.
+                    new_url = urljoin(filepath_or_url, filename)
+                resp = get(new_url)
+                output_data_list.append(resp.text)
+            else:
+                filename = os.path.join(pyproject_dir, filename)
+                if os.path.exists(filename):
+                    with open(filename) as opened_file:
+                        output_data_list.append(opened_file.read())
+
+
+        if isinstance(_get_pyproject_attr(pyproject_data, attrname), list):
+            _write_pyproject_attr(
+                pyproject_data, attrname, output_data_list)
+        else:
+            # Original data wasn't a list, so just write the value.
+            _write_pyproject_attr(
+                pyproject_data, attrname, output_data_list[0])
+    import pprint
+    pprint.pprint(pyproject_data)
     return pyproject_data
 
 
@@ -231,7 +243,7 @@ def _validate_pyproject_file(filepath):
             f"{filepath} was found to have validation errors:\n"
             + "\n".join(f"❌ {issue}" for issue in natcap_requirement_errors))
 
-    return None
+    return "guess it ran through?"
 
 
 def _validate_project_json_file(filepath):
