@@ -25,6 +25,7 @@ from urllib.parse import urljoin
 from urllib.parse import urlparse
 
 if 'pyodide' in sys.modules:
+    import pyodide.http
     from pyodide.http.pyxhr import get
     from pyodide.http.pyxhr import head
 else:
@@ -70,8 +71,13 @@ def _write_pyproject_attr(tomldata, attr, new_value):
 
 def _test_url(url):
     if 'pyodide' in sys.modules:
-        # ℹ️  Cannot test URL in pyodide environment due to CORS restrictions
-        return None
+        # ℹ️  Generally cannot test URL in pyodide environment due to CORS restrictions
+        try:
+            resp = get(url)
+            if not resp.ok:
+                LOGGER.info(f"could not load URL {url}")
+        except pyodide.http._exceptions.XHRError as e:
+            LOGGER.info(f"Could not load URL as {e}: {url}")
     else:
         req = head(url)
         if not req.ok:
