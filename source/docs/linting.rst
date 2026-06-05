@@ -11,6 +11,13 @@ handy linter below, built with Pyodide.  Validation messages related to you
 	 supported by the plugins registry at this time.
 
 
+.. note::
+	 Attributes of ``pyproject.toml`` that refer to external sites generally
+	 cannot be checked because of Cross-Origin Resource Sharing restrictions.
+	 These attributes will not be linted in this script, but will be linted
+	 during the plugin submission PR.
+
+
 .. raw:: html
 
    <div id="custom-container">
