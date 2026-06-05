@@ -17,12 +17,12 @@ import collections
 import json
 import logging
 import os
+import pprint
 import re
 import sys
 import tomllib
 from urllib.parse import urljoin
 from urllib.parse import urlparse
-from urllib.parse import urlsplit
 
 if 'pyodide' in sys.modules:
     from pyodide.http.pyxhr import get
@@ -81,6 +81,8 @@ def _test_url(url):
 def _is_nonempty(s):
     if len(s) == 0:
         return "Expected text, but didn't find anything"
+    if None in set(s):
+        return "At least one file defined could not be found"
 
 
 def _file_exists(filepath):
@@ -107,10 +109,6 @@ def _load_pyproject_toml(filepath_or_url):
     is_url = filepath_or_url.startswith('https://')
 
     if is_url:
-        parsed_url = urlparse(filepath_or_url)
-        is_gitlab = (
-            '/api/v4/projects/'in filepath_or_url and
-            parsed_url.netloc != 'github.com')
 
         req = get(filepath_or_url)
         try:
@@ -119,11 +117,23 @@ def _load_pyproject_toml(filepath_or_url):
             print(f"Could not parse file: {str(e)} at {filepath_or_url}")
             print(req.text)
             raise e
-        pyproject_dir = os.path.dirname(urlsplit(filepath_or_url).path)
     else:
-        pyproject_dir = os.path.dirname(filepath_or_url)
         with open(filepath_or_url, 'rb') as tomlfile:
             pyproject_data = tomllib.load(tomlfile)
+
+    return pyproject_data
+
+
+
+def _read_pyproject_referenced_files(filepath_or_url, pyproject_data):
+    is_url = filepath_or_url.startswith('https://')
+    if is_url:
+        parsed_url = urlparse(filepath_or_url)
+        is_gitlab = (
+            '/api/v4/projects/'in filepath_or_url and
+            parsed_url.netloc != 'github.com')
+    else:
+        pyproject_dir = os.path.dirname(filepath_or_url)
 
     # Any other attributes that we expect to be files, just include them here
     # in this list.
@@ -135,7 +145,7 @@ def _load_pyproject_toml(filepath_or_url):
         try:
             filenames = _get_pyproject_attr(pyproject_data, attrname)
         except ValueError:
-            print(f"No value at {attrname}")
+            LOGGER.info(f"No value at {attrname}")
             continue
 
         if not isinstance(filenames, list):
@@ -155,13 +165,16 @@ def _load_pyproject_toml(filepath_or_url):
                     # url.
                     new_url = urljoin(filepath_or_url, filename)
                 resp = get(new_url)
-                output_data_list.append(resp.text)
+                if not resp.ok:
+                    LOGGER.info(f"Failed to fetch {new_url}")
+                    output_data_list.append(None)
+                else:
+                    output_data_list.append(resp.text)
             else:
                 filename = os.path.join(pyproject_dir, filename)
                 if os.path.exists(filename):
                     with open(filename) as opened_file:
                         output_data_list.append(opened_file.read())
-
 
         if isinstance(_get_pyproject_attr(pyproject_data, attrname), list):
             _write_pyproject_attr(
@@ -170,8 +183,7 @@ def _load_pyproject_toml(filepath_or_url):
             # Original data wasn't a list, so just write the value.
             _write_pyproject_attr(
                 pyproject_data, attrname, output_data_list[0])
-    import pprint
-    pprint.pprint(pyproject_data)
+    LOGGER.debug(pprint.pformat(pyproject_data))
     return pyproject_data
 
 
@@ -188,6 +200,8 @@ def _validate_pyproject_file(filepath):
         # error.details is the full, multi-hundred-line description
         # error.message has both error.summary, error.details.
         return f"❌ Could not load pyproject.toml: {error.summary}"
+
+    pyproject_data = _read_pyproject_referenced_files(filepath, pyproject_data)
 
     natcap_requirement_errors = []
     attrs_to_validate = {
