@@ -308,7 +308,7 @@ def main(args=None):
                         help="path to the plugin.json file")
     parser.add_argument(
         '--target-file',
-        default='',
+        default=None,
         help=("Where output should be written. If not provided, output is "
               "written to stdout"))
 
