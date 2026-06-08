@@ -86,7 +86,11 @@ The following keys are required for inclusion in the community plugin registry:
   * ``name``: The name of your project.
   * ``authors`` and/or ``maintainers``: You only need to include one of these, but if
     the authors and maintainer of the plugin differ, you may include both.
-  * ``description``: A brief description of your plugin.
+  * ``description``: A brief description of your plugin. This will be used on the index page
+    listing all plugins. It ought to be short (only the first 300 characters will be displayed)
+    but descriptive enough to give someone an idea of what your plugin does. This description
+    will also be used on your plugin's detail page unless you provide a separate
+    ``registry_description`` (see below, in the ``[tool.natcap.invest]`` section).
   * ``readme``: This is a longer description of your plugin. Typically, a project will
     have a ``README.md`` or ``README.rst`` file and you should put that file name here.
   * ``license``: This is an `SPDX license <https://packaging.python.org/en/latest/glossary/#term-License-Expression>`_ expression consisting of one or more `license identifiers <https://packaging.python.org/en/latest/glossary/#term-License-Identifier>`_.

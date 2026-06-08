@@ -15,8 +15,8 @@ author = 'The Natural Capital Alliance'
 
 extensions = [
     "sphinx_design",
-    "sphinx_design_elements",
     "sphinx_tags",
+    "sphinx_copybutton",
     "myst_parser",
 ]
 

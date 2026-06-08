@@ -29,7 +29,7 @@ Current Reviewer Pool Members:
 
 - Lisa Mandle (:octicon:`mark-github` `lmandle <https://github.com/lmandle>`_)
 - Peter Hawthorne (:octicon:`mark-github` `phawthorne <https://github.com/phawthorne>`_)
-- Eric Lonsdorf
+- Eric Lonsdorf (:octicon:`mark-github` `ericlonsdorf <https://github.com/ericlonsdorf>`_)
 
 NatCap Stanford Software Team:
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

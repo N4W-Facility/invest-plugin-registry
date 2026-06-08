@@ -1,6 +1,7 @@
 requests
 sphinx
-sphinx-design-elements
+sphinx-copybutton
+sphinx-design
 sphinx-tags
 furo
 validate-pyproject
