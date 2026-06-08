@@ -1,17 +1,14 @@
 {% macro keywordBadge(keyword, plugin_type=False) -%}
   {% if plugin_type -%}
     {% set badge_type = 'primary' %}
+    {% set keyword = keyword | plugin_type_display_name %}
   {% else %}
     {% set badge_type = 'info' %}
   {%- endif %}
   <span> </span>
   <a class="sd-sphinx-override sd-badge sd-bg-{{ badge_type }} sd-bg-text-{{ badge_type }} reference internal" href="../_tags/{{ keyword | normalize_tag }}.html">
     <span class="doc">
-    {%- if plugin_type -%}
-      {{ keyword | plugin_type_display_name }}
-    {%- else -%}
       {{ keyword }}
-    {%- endif -%}
     </span>
   </a>
 {%- endmacro %}
