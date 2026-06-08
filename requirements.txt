@@ -1,7 +1,9 @@
 requests
 sphinx
 sphinx-copybutton
+sphinx-design
 sphinx-tags
 furo
 validate-pyproject
 myst-parser
+Frozen-Flask
