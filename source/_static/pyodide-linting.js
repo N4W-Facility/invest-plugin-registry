@@ -42,7 +42,7 @@ async function executePythonScript() {
 				// runPythonAsync returns the evaluated result of the last line/expression
 				await pyodide.runPython(pythonCode);
 				const validateFunc = pyodide.globals.get('_validate_pyproject_file');
-			  const gitHost = document.getElementById("githost").value;
+				const gitHost = document.getElementById("githost").value;
 				const githostUser = document.getElementById("githostusername").value;
 				const githostRepo = document.getElementById("githostrepo").value;
 				const gitRef = document.getElementById("gitref").value;
