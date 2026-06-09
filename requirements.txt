@@ -6,3 +6,4 @@ sphinx-tags
 furo
 validate-pyproject
 myst-parser
+Jinja2

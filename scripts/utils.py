@@ -2,6 +2,16 @@ import re
 from urllib.parse import urlparse
 
 
+PLUGIN_TYPES = {
+    "preprocessing": "Preprocessing",
+    "postprocessing": "Postprocessing",
+    "workflow": "Workflow",
+    "invest_model_variant": "InVEST Model Variant",
+    "new_model": "New Model",
+    "other": "Other"
+}
+
+
 def construct_base_url(git_url, version):
     # Sanitize for safety:
     git_url = git_url.strip()

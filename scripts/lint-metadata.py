@@ -34,12 +34,13 @@ else:
 
 import validate_pyproject.api  # requires packaging>=24.2 for enforcement.
 
+from utils import PLUGIN_TYPES
+
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
-ALLOWED_PLUGIN_TYPES = [
-    'preprocessing', 'postprocessing', 'workflow', 'invest_model_variant',
-    'new_model', 'other']
+ALLOWED_PLUGIN_TYPES = PLUGIN_TYPES.keys()
 
 Required = collections.namedtuple('Required', ['tomlattr'])
 Optional = collections.namedtuple('Optional', ['tomlattr'])
@@ -309,7 +310,7 @@ def _validate_project_json_file(filepath):
             if plugin_type not in ALLOWED_PLUGIN_TYPES:
                 issues.append(
                     f"Plugin type '{plugin_type}' must be one of the "
-                    f'supported plugin types {ALLOWED_PLUGIN_TYPES}')
+                    f'supported plugin types {list(ALLOWED_PLUGIN_TYPES)}')
         else:
             issues.append(
                 f"Plugin {object_num} is missing the attribute 'plugin_type'")

@@ -5,18 +5,11 @@ import os
 import re
 import textwrap
 
+from utils import PLUGIN_TYPES
+
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-
-
-PLUGIN_TYPES = {
-    "preprocessing": "Preprocessing",
-    "postprocessing": "Postprocessing",
-    "workflow": "Workflow",
-    "invest_model_variant": "InVEST Model Variant",
-    "new_model": "New Model",
-    "other": "Other"
-}
 
 
 def format_contact(contacts):
