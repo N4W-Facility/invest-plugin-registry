@@ -8,6 +8,7 @@ Documentation
 
    installing
    submission_process
+   linting
    ai_policy
    governance
    review_rubric

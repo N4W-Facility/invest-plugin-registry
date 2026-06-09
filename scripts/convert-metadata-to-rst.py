@@ -67,11 +67,11 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
         # only list as pypi deps those packages that are not listed in conda
         # deps
         if '\n' in condaforge_dependencies:
-            cf_pkgs = set([re.findall('^\w+', dep)[0] for dep in
+            cf_pkgs = set([re.findall('^\\w+', dep)[0] for dep in
                            cf_dependencies_list])
             pypi_dependencies_list = []
             for pypi_dep in pypi_deps_list:
-                pkg = re.findall('^\w+', pypi_dep)[0]
+                pkg = re.findall('^\\w+', pypi_dep)[0]
                 if pkg not in cf_pkgs:
                     pypi_dependencies_list.append(pypi_dep)
             pypi_dependencies = "\n".join(
