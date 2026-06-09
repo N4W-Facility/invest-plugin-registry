@@ -62,7 +62,7 @@ async function executePythonScript() {
 				document.getElementById("output").innerText = result;
 		} catch (err) {
 				document.getElementById("output").innerText = `Python Runtime Error:\n${err.message}`;
-			  console.log(err);
+				console.log(err);
 		}
 }
 
