@@ -6,4 +6,4 @@ sphinx-tags
 furo
 validate-pyproject
 myst-parser
-Frozen-Flask
+Jinja2

@@ -26,7 +26,7 @@ source_suffix = {
 }
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'flask']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'jinja']
 
 
 # -- Sphinx Tags Config ------------------------------------------------------

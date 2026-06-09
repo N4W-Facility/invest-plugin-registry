@@ -1,26 +1,22 @@
 import json
+import logging
 import re
 from os import path
 
-from flask import Flask, render_template
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+from utils import PLUGIN_TYPES
 
 
-app = Flask(__name__)
-
-METADATA_PATH = path.join(path.dirname(__file__), '../../html/metadata.json')
-
-PLUGIN_TYPES = { 
-    "preprocessing": "Preprocessing",
-    "postprocessing": "Postprocessing",
-    "workflow": "Workflow",
-    "invest_model_variant": "InVEST Model Variant",
-    "new_model": "New Model",
-    "other": "Other"
-}
+logging.basicConfig(level=logging.INFO)
+LOGGER = logging.getLogger(__name__)
+METADATA_PATH = path.join(path.dirname(__file__), '../html/metadata.json')
+JINJA_TEMPLATE_DIR = path.join(path.dirname(__file__), '../source/jinja')
+OUTPATH = path.join(path.dirname(__file__), '../source/plugins/plugins_index.html')
 
 
-def load_plugin_json(app):
-    with app.open_resource(METADATA_PATH, 'r') as fin:
+def load_plugin_json():
+    with open(METADATA_PATH, 'r') as fin:
         plugins = json.load(fin)
         return plugins['data']
 
@@ -41,6 +37,7 @@ def sort_plugins(plugins: dict, sort_key: str = 'plugin_name') -> list[dict]:
     """
     plugins_to_sort = []
     for plugin_key, plugin_data in plugins.items():
+        plugin_data = plugin_data.copy()
         plugin_data['plugin_key'] = plugin_key
         plugins_to_sort.append(plugin_data)
 
@@ -61,7 +58,11 @@ def normalize_tag(tag: str) -> str:
 
 def plugin_type_display_name(tag: str) -> str:
     """Fetch the display name for ``plugin_type`` keywords."""
-    return PLUGIN_TYPES.get(tag, tag)
+    try:
+        return PLUGIN_TYPES[tag]
+    except KeyError:
+        LOGGER.warning(f"plugin_type {tag} does not appear in PLUGIN_TYPES")
+        return tag
 
 
 def format_authors_maintainers(plugin_data: dict) -> str:
@@ -72,7 +73,7 @@ def format_authors_maintainers(plugin_data: dict) -> str:
     authors and maintainers, that name will only be included once.
     """
     authors_maintainers = (
-        plugin_data.get('authors', []) + 
+        plugin_data.get('authors', []) +
         plugin_data.get('maintainers', [])
     )
 
@@ -94,15 +95,26 @@ def truncate_text(text: str, length: int = 300, end: str = "...") -> str:
     return truncated + end
 
 
-app.jinja_env.filters['normalize_tag'] = normalize_tag
-app.jinja_env.filters['plugin_type_display_name'] = plugin_type_display_name
-app.jinja_env.filters['format_authors_maintainers'] = format_authors_maintainers
-app.jinja_env.filters['truncate_text'] = truncate_text
-
-
-@app.route("/plugins_index.html")
-def plugins():
-    all_plugins = load_plugin_json(app)
+def main():
+    all_plugins = load_plugin_json()
     sorted_plugins = sort_plugins(all_plugins)
-    return render_template("plugin_index.html",
-                           plugins=sorted_plugins)
+
+    env = Environment(
+        loader=FileSystemLoader(JINJA_TEMPLATE_DIR),
+        autoescape=select_autoescape()
+    )
+
+    env.filters['normalize_tag'] = normalize_tag
+    env.filters['plugin_type_display_name'] = plugin_type_display_name
+    env.filters['format_authors_maintainers'] = format_authors_maintainers
+    env.filters['truncate_text'] = truncate_text
+
+    template = env.get_template('plugin_index.html')
+    rendered_template = template.render(plugins=sorted_plugins)
+
+    with open(OUTPATH, 'w') as f:
+        f.write(rendered_template)
+
+
+if __name__ == '__main__':
+    main()
