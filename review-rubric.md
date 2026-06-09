@@ -14,6 +14,6 @@ Please review the plugin submission pull request based on the following criteria
     * [ ] A brief description of the plugin's motivation and context;
     * [ ] Acknowledgment of the Code of Conduct
 * [ ] The plugin is related to nature and/or nature's benefits to people
-* [ ] The plugin has documentation
+* [ ] The plugin has documentation and documents data needs
 * [ ] The plugin's documentation appears relevant to the plugin's description
 * [ ] The plugin's name is unique and appropriate (it adheres to the Code of Conduct)

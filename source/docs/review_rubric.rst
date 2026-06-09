@@ -17,7 +17,7 @@ on the following criteria:
 
 - [ ] The plugin is germane to NatCap's work, broadly (it has to do with nature and/or
   nature's benefits to people)
-- [ ] The plugin has documentation
+- [ ] The plugin has documentation and documents data needs
 - [ ] The plugin's documentation appears relevant to the plugin's description
 - [ ] The plugin's name is unique and appropriate (it adheres to the
   `Code of Conduct <code_of_conduct.html>`_)

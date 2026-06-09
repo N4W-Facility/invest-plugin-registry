@@ -22,6 +22,7 @@ Please provide brief answers to the following questions, to help the reviewers q
 
 - [ ] I have read the InVEST [Code of Conduct](https://natcap.github.io/invest-plugin-registry/docs/code_of_conduct.html) and attest that my plugin adheres to it.
 - [ ] I agree to allow metadata about the submitted plugin to be stored in perpetuity to allow for the persistence of open science and data.
+- [ ] I have clearly documented data needs and any data licensing restrictions that would be useful for a user to know.
 
 **Did you use Generative AI in the development of your plugin?**
 
@@ -31,6 +32,3 @@ Please provide brief answers to the following questions, to help the reviewers q
 If generative AI was used, please acknowledge the following:
 
 - [ ] The authors of this plugin affirm that all generated material has been reviewed and edited for clarity, correctness, and completeness. The authors acknowledge that they are responsible for the content of their work. 
-
-**Derivative data licensing disclosure (check this box only if applicable):**
-- [ ] This plugin requires or comes with data derived from other datasets that required a license to use.
