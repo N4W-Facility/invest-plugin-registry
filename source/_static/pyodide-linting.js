@@ -22,7 +22,7 @@ async function initPyodide() {
 
 		} catch (err) {
 				document.getElementById("output").innerText = `Initialization failed: ${err.message}`;
-			  console.log(err.message);
+				console.log(err.message);
 		}
 }
 
