@@ -149,7 +149,7 @@ Step 1: Test your pyproject.toml with our browser-based linter
 --------------------------------------------------------------
 
 We have a browser-based validation tool that runs the same validation script
-against your ``pyproject.toml`` as will run in in an open pull request, which
+against your ``pyproject.toml`` as will run in an open pull request, which
 is available at :doc:`linting`.
 
 ----
