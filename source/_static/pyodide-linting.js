@@ -47,8 +47,8 @@ async function executePythonScript() {
 				const githostRepo = document.getElementById("githostrepo").value;
 				const gitRef = document.getElementById("gitref").value;
 
-			  const githubPattern = /github\.com/;
-			  let tomlpath;
+				const githubPattern = /github\.com/;
+				let tomlpath;
 				if (githubPattern.test(gitHost)) {
 					tomlpath = `https://raw.githubusercontent.com/${githostUser}/${githostRepo}/refs/heads/${gitRef}/pyproject.toml`;
 				} else {
