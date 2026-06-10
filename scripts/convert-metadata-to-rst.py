@@ -68,7 +68,7 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
                 if pkg not in cf_pkgs:
                     pypi_dependencies_list.append(pypi_dep)
             pypi_dependencies = "\n".join(
-                [" "*12 + dep for dep in pypi_dependencies_list])
+                [" "*12 + dep for dep in pypi_dependencies_list]).lstrip()
         else:
             pypi_dependencies = "\n".join(
                 [" "*12 + dep for dep in pypi_deps_list]).lstrip()
