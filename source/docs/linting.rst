@@ -2,13 +2,13 @@
 In-Browser Linting
 ==================
 
-To lint your project's pyproject.toml before submitting a PR, just run our
+To lint your project's ``pyproject.toml`` before submitting a PR, just run the
 handy linter below, built with Pyodide.  Validation messages related to you
 ``pyproject.toml`` file will appear just below the inputs.
 
 .. note::
 	 Only ``github.com``, ``gitlab.com`` and self-hosted Gitlab instances are
-	 supported by the plugins registry at this time.
+	 supported by the Community Plugin Registry at this time.
 
 
 .. note::

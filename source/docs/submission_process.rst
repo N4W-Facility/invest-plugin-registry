@@ -150,12 +150,13 @@ GitHub docs for how to `create a new repository <https://docs.github.com/en/repo
 
 .. _lint_your_plugin_in_browser:
 
-Step 1: Test your pyproject.toml with our browser-based linter
+Step 1: Test your pyproject.toml with the browser-based linter
 --------------------------------------------------------------
 
-We have a browser-based validation tool that runs the same validation script
-against your ``pyproject.toml`` as will run in an open pull request, which
-is available at :doc:`linting`.
+The Registry site includes a :doc:`browser-based validation tool <linting>` that runs the
+same validation script against your ``pyproject.toml`` as will run in an open pull request.
+Using this tool to double-check your ``pyproject.toml`` before proceeding with the submission
+process can help reduce the need for iteration later.
 
 ----
 
@@ -170,7 +171,7 @@ release may differ slightly. Please refer to the guide for your repo host:
 * `GitHub documentation <https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release>`_
 * `GitLab documentation <https://docs.gitlab.com/user/project/releases/#create-a-release-in-the-releases-page>`_
 
-For the Tag, we require that you follow the `semantic versioning <https://semver.org/>`_
+For the Tag, you are required to follow the `semantic versioning <https://semver.org/>`_
 specification, e.g. 1.0.0 for an initial release. Only versions with the format ``x.y.z``
 are supported; do not prefix your version with ``v``.
 
