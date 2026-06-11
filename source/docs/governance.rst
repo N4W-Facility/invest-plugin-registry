@@ -16,7 +16,7 @@ the Reviewer Pool can review and approve a plugin submission.
 The Community Plugin Registry is maintained by the Natural Capital Alliance Stanford
 Software Team. The Software Team is currently responsible for fulfilling the role of
 Community Manager, and has the authority to respond to violations of the
-`NatCap InVEST Community Code of Conduct <code_of_conduct.html>`_ or to remove any plugin
+:doc:`NatCap InVEST Community Code of Conduct <code_of_conduct>` or to remove any plugin
 from the registry that is determined to pose a security risk or to be in violation of the
 policies outlined in these documents.
 

@@ -291,12 +291,12 @@ Specifically, they will evaluate based on the following questions:
 * Does the plugin have documentation? Does the documentation look relevant to the plugin's
   description?
 * Is the plugin's name unique and appropriate? Does it adhere to the
-  `Code of Conduct <code_of_conduct.html>`_? (It's generally recommended to give your
+  :doc:`Code of Conduct <code_of_conduct>`? (It's generally recommended to give your
   plugin a name that's related to what it does. Don't call your plugin "banana" unless
   it's modeling something about bananas!)
 
 If you would like to view the exact rubric the reviewers use, you may do so
-:ref:`here <review_rubric>`.
+:doc:`here <review_rubric>`.
 
 ----
 

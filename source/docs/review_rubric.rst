@@ -20,7 +20,7 @@ on the following criteria:
 - [ ] The plugin has documentation and documents data needs
 - [ ] The plugin's documentation appears relevant to the plugin's description
 - [ ] The plugin's name is unique and appropriate (it adheres to the
-  `Code of Conduct <code_of_conduct.html>`_)
+  :doc:`Code of Conduct <code_of_conduct>`)
 
 **If any of the above criteria were not met, please provide a brief explanation:**
 
