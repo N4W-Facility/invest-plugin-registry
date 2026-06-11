@@ -39,6 +39,7 @@ jobs:
 
             - name: Extract the new plugin data and lint it
               shell: bash
+              id: validate
               run: |
                   set -ex  # fail script on first command failure.
 
@@ -49,9 +50,21 @@ jobs:
               if: always()
               run: |
                   mkdir pr-data
-                  echo $PR_NUMBER > pr-data/pr-num.txt
+                  echo "$PR_NUMBER" > pr-data/pr-num.txt
                   echo ${{ github.event.pull_request.user.login }} > pr-data/pr-author.txt
                   cp "$TARGET_FILE" pr-data/
+
+                  # Validation failure can be noted by nonzero exit status
+                  # (first part of script) or by the red x emoji in the output
+                  # file.  Handle both cases.
+                  VALIDATION_EXITED_NONZERO=${{ steps.validate.outcome }}
+                  if (grep ❌ "$TARGET_FILE" ||
+                        [[ "$VALIDATION_EXITED_NONZERO" = "failure" ]])
+                  then
+                      printf "failed" > pr-data/validation-status.txt
+                  else
+                      printf "passed" > pr-data/validation-status.txt
+                  fi
 
             - name: Upload artifact
               if: always()

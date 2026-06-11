@@ -39,3 +39,14 @@ jobs:
                         "$PR_NUM" \
                         --body-file "$VALIDATION_RESULTS" \
                         --repo ${{ github.repository }}
+
+                  VALIDATION_STATUS=$(cat pr-data/validation-status.txt)
+                  REVIEWER_POOL="@natcap/plugin-reviewers"
+                  if [[ "$VALIDATION_STATUS" = "passed" ]]
+                  then
+                      gh pr edit \
+                        "$PR_NUM" \
+                        --repo ${{ github.repository }} \
+                        --add-reviewer "$REVIEWER_POOL" \
+                        --add-assignee "$REVIEWER_POOL"
+                  fi
