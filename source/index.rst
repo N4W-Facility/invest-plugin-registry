@@ -10,11 +10,11 @@ please see the `feature announcement <https://naturalcapitalalliance.stanford.ed
 Browse available plugins
 ------------------------
 
-A list of known community plugins can be found `here <plugins/index.html>`_. You can also
+A list of known community plugins can be found :doc:`here <plugins/index>`. You can also
 use the search bar in the left column to search on keywords.
 
 If you find a plugin you'd like to use, you can install it from the InVEST Workbench. Take a
-look at the :ref:`Plugin Installation Docs <installing>` for more details.
+look at the :doc:`Plugin Installation Docs <docs/installing>` for more details.
 
 .. note::
    Plugins are developed by independent organizations and developers and the Natural Capital
@@ -28,8 +28,8 @@ Contribute a plugin
 
 If you've created an InVEST plugin and would like to make it available to others in the
 community, the best way to make it discoverable is to submit it for inclusion in this
-registry. Take a look at the :ref:`Plugin Submission Docs <submission>` for a detailed
-guide.
+registry. Take a look at the :doc:`Plugin Submission Docs <docs/submission_process>` for a
+detailed guide.
 
 Have an idea for a plugin or an existing script that you'd like to turn into one? Take a
 look at the `Plugin Developer Docs <https://invest.readthedocs.io/en/latest/plugins.html>`_
