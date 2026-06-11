@@ -50,6 +50,7 @@ jobs:
               run: |
                   mkdir pr-data
                   echo $PR_NUMBER > pr-data/pr-num.txt
+                  echo ${{ github.event.pull_request.user.login }} > pr-data/pr-author.txt
                   cp "$TARGET_FILE" pr-data/
 
             - name: Upload artifact
