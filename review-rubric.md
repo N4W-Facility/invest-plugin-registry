@@ -17,3 +17,6 @@ Please review the plugin submission pull request based on the following criteria
 * [ ] The plugin has documentation and documents data needs
 * [ ] The plugin's documentation appears relevant to the plugin's description
 * [ ] The plugin's name is unique and appropriate (it adheres to the Code of Conduct)
+
+For detailed instructions on submitting a review, please reference the [Review Process
+docs](https://natcap.github.io/invest-plugin-registry/docs/review_rubric.html).
