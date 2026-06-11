@@ -7,4 +7,4 @@ be a security risk. If you believe a plugin poses a security risk, please go to 
 Security and Quality tab of the Registry GitHub Repo and use the
 “Report a vulnerability” button to file a report.
 
-Security and Qualtiy tab: https://github.com/natcap/invest-plugin-registry/security
+Security and Quality tab: https://github.com/natcap/invest-plugin-registry/security
