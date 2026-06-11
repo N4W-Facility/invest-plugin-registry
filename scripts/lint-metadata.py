@@ -17,14 +17,25 @@ import collections
 import json
 import logging
 import os
+import pprint
 import re
 import sys
 import tomllib
+from urllib.parse import urljoin
+from urllib.parse import urlparse
 
-import requests
+if 'pyodide' in sys.modules:
+    import pyodide.http
+    from pyodide.http.pyxhr import get
+    from pyodide.http.pyxhr import head
+else:
+    from requests import get
+    from requests import head
+
 import validate_pyproject.api  # requires packaging>=24.2 for enforcement.
 
-logging.basicConfig(level=logging.DEBUG)
+
+logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 ALLOWED_PLUGIN_TYPES = [
@@ -48,27 +59,145 @@ def _get_pyproject_attr(tomldata, attr):
     return subtomldata
 
 
+def _write_pyproject_attr(tomldata, attr, new_value):
+    subtomldata = tomldata
+    keys_list = attr.split('.')
+    max_depth = len(keys_list) - 1
+    for depth, subattr in enumerate(keys_list):
+        if depth == max_depth:
+            subtomldata[subattr] = new_value
+        else:
+            subtomldata = subtomldata[subattr]
+
+
 def _test_url(url):
-    req = requests.head(url)
-    if not req.ok:
-        return f"Could not load URL {url}"
+    if 'pyodide' in sys.modules:
+        # ℹ️  Generally cannot test URL in pyodide environment due to CORS restrictions
+        try:
+            resp = get(url)
+            if not resp.ok:
+                LOGGER.info(f"could not load URL {url}")
+        except pyodide.http._exceptions.XHRError as e:
+            LOGGER.info(f"Could not load URL as {e}: {url}")
+    else:
+        req = head(url)
+        if not req.ok:
+            return f"Could not load URL {url}"
 
 
 def _is_nonempty(s):
     if len(s) == 0:
         return "Expected text, but didn't find anything"
+    if None in set(s):
+        return "At least one file defined could not be found"
 
 
 def _file_exists(filepath):
+    if filepath.startswith('https://'):
+        resp = head(filepath)
+        if not resp.ok:
+            return f"Could not find file at {filepath}"
     if not os.path.exists(filepath):
         return f"Could not find local file {filepath}"
 
 
+def _load_pyproject_toml(filepath_or_url):
+    """Load a pyproject.toml file.
+
+    If there are any linked files, those are loaded too.
+
+    Args:
+        filepath_or_url (str): The local filepath or URL to a
+            pyproject.toml file.
+
+    Returns:
+        tomldata (dict): The loaded dictionary with toml data.
+    """
+    is_url = filepath_or_url.startswith('https://')
+
+    if is_url:
+
+        req = get(filepath_or_url)
+        try:
+            pyproject_data = tomllib.loads(req.text)
+        except tomllib.TOMLDecodeError as e:
+            print(f"Could not parse file: {str(e)} at {filepath_or_url}")
+            print(req.text)
+            raise e
+    else:
+        with open(filepath_or_url, 'rb') as tomlfile:
+            pyproject_data = tomllib.load(tomlfile)
+
+    return pyproject_data
+
+
+
+def _read_pyproject_referenced_files(filepath_or_url, pyproject_data):
+    is_url = filepath_or_url.startswith('https://')
+    if is_url:
+        parsed_url = urlparse(filepath_or_url)
+        is_gitlab = (
+            '/api/v4/projects/'in filepath_or_url and
+            parsed_url.netloc != 'github.com')
+    else:
+        pyproject_dir = os.path.dirname(filepath_or_url)
+
+    # Any other attributes that we expect to be files, just include them here
+    # in this list.
+    for attrname in [
+            'project.readme',
+            'project.license-files',
+            'tool.natcap.invest.registry_description',
+            ]:
+        try:
+            filenames = _get_pyproject_attr(pyproject_data, attrname)
+        except ValueError:
+            LOGGER.info(f"No value at {attrname}")
+            continue
+
+        if not isinstance(filenames, list):
+            filenames = [filenames]
+
+        output_data_list = []
+        for filename in filenames:
+            if is_url:
+                if is_gitlab:
+                    # There are parameters to worry about, so handle those
+                    # with a simplistic find/replace
+                    new_url = filepath_or_url.replace(
+                        'files/pyproject.toml/raw',
+                        f'files/{filename}/raw')
+                else:
+                    # It's github, we can just urljoin the new file to the
+                    # url.
+                    new_url = urljoin(filepath_or_url, filename)
+                resp = get(new_url)
+                if not resp.ok:
+                    LOGGER.info(f"Failed to fetch {new_url}")
+                    output_data_list.append(None)
+                else:
+                    output_data_list.append(resp.text)
+            else:
+                filename = os.path.join(pyproject_dir, filename)
+                if os.path.exists(filename):
+                    with open(filename) as opened_file:
+                        output_data_list.append(opened_file.read())
+
+        if isinstance(_get_pyproject_attr(pyproject_data, attrname), list):
+            _write_pyproject_attr(
+                pyproject_data, attrname, output_data_list)
+        else:
+            # Original data wasn't a list, so just write the value.
+            _write_pyproject_attr(
+                pyproject_data, attrname, output_data_list[0])
+    LOGGER.debug(pprint.pformat(pyproject_data))
+    return pyproject_data
+
+
 def _validate_pyproject_file(filepath):
     validator = validate_pyproject.api.Validator()
-    pyproject_dir = os.path.dirname(filepath)
-    with open(filepath, 'rb') as tomlfile:
-        pyproject_data = tomllib.load(tomlfile)
+
+    pyproject_data = _load_pyproject_toml(filepath)
 
     # Check for the standard pyproject.toml validation requirements
     try:
@@ -78,6 +207,8 @@ def _validate_pyproject_file(filepath):
         # error.details is the full, multi-hundred-line description
         # error.message has both error.summary, error.details.
         return f"❌ Could not load pyproject.toml: {error.summary}"
+
+    pyproject_data = _read_pyproject_referenced_files(filepath, pyproject_data)
 
     natcap_requirement_errors = []
     attrs_to_validate = {
@@ -89,8 +220,7 @@ def _validate_pyproject_file(filepath):
         Required('project.readme'): _is_nonempty,
         Required('project.license'): _is_nonempty,
         Required('project.license-files'): _is_nonempty,
-        Optional('tool.natcap.invest.registry_description'): (
-            lambda path: _file_exists(f'{pyproject_dir}/{path}')),
+        Optional('tool.natcap.invest.registry_description'): _is_nonempty,
     }
     for attr, test_callable in attrs_to_validate.items():
         is_required = isinstance(attr, Required)
@@ -103,7 +233,7 @@ def _validate_pyproject_file(filepath):
                     'Pyproject.toml is missing the required attribute '
                     f'{attrname}')
             else:
-                LOGGER.debug(f"Attribute {attrname} is optional and not "
+                LOGGER.info(f"Attribute {attrname} is optional and not "
                              "provided; skipping")
             continue
 
@@ -134,7 +264,8 @@ def _validate_pyproject_file(filepath):
             f"{filepath} was found to have validation errors:\n"
             + "\n".join(f"❌ {issue}" for issue in natcap_requirement_errors))
 
-    return None
+    if 'pyodide' in sys.modules:
+        return "✅ No validation errors found in pyproject.toml!"
 
 
 def _validate_project_json_file(filepath):
@@ -144,17 +275,26 @@ def _validate_project_json_file(filepath):
     except json.decoder.JSONDecodeError as error:
         return f"❌ Could not parse JSON file at {filepath}: {str(error)}"
 
+    assert isinstance(json_data, list), (
+        "The JSON file provided should be an array of all the project data in "
+        "the registry.  The top-level object should be an array, but isn't.")
+
     # We're assuming that the top-level object is an array
     issues = []
     for object_num, plugin_data in enumerate(json_data):
         if "repo_url" in plugin_data:
             url = plugin_data['repo_url']
-            req = requests.head(url)
+            req = head(url)
             if not req.ok:
                 issues.append(f"URL {url} could not be found")
         else:
             issues.append(
                 f"Plugin {object_num} is missing the attribute 'repo_url'")
+
+        # Confirm the plugin name exists; uniqueness checked in a later step
+        if "plugin_name" not in plugin_data:
+            issues.append(
+                f"Plugin {object_num} is missing the attribute 'plugin_name'")
 
         if "version" in plugin_data:
             if not re.match('^[0-9]+.[0-9]+.[0-9]+$',
@@ -199,7 +339,7 @@ def main(args=None):
                         help="path to the plugin.json file")
     parser.add_argument(
         '--target-file',
-        default='',
+        default=None,
         help=("Where output should be written. If not provided, output is "
               "written to stdout"))
 
@@ -241,4 +381,7 @@ def main(args=None):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    # If pyodide is running in sys.modules, ignore the main() function since we
+    # want to import and run specific functions from this script.
+    if 'pyodide' not in sys.modules:
+        main(sys.argv[1:])

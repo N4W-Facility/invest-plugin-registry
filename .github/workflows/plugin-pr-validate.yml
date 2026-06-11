@@ -1,4 +1,4 @@
-name: Validate new plugin
+name: "Validate new plugin"
 
 on:
     pull_request:
@@ -18,12 +18,13 @@ permissions:
     pull-requests: write
 
 jobs:
-    start-plugin-contrib-pr:
+    plugin-validation-pr:
         runs-on: ubuntu-latest
         env:
             PR_NUMBER: ${{ github.event.number }}
             REPO: ${{ github.repository }}
             GH_TOKEN: ${{ github.token }}
+            TARGET_FILE: "validation-results.md"
         steps:
             - uses: actions/checkout@v4
 
@@ -41,4 +42,18 @@ jobs:
               run: |
                   set -ex  # fail script on first command failure.
 
-                  scripts/validateall.sh
+                  scripts/validateall.sh "$TARGET_FILE"
+
+            - name: Record additional context for later comment
+              shell: bash
+              if: always()
+              run: |
+                  mkdir pr-data
+                  echo $PR_NUMBER > pr-data/pr-num.txt
+                  cp "$TARGET_FILE" pr-data/
+
+            - name: Upload artifact
+              if: always()
+              uses: actions/upload-artifact@v7
+              with:
+                  path: pr-data

@@ -8,11 +8,12 @@ here](https://natcap.github.io/invest-plugin-registry/docs/submission_process.ht
 
 Please review the plugin submission pull request based on the following criteria:
 
+* [ ] The only modification to ``plugins.json`` was to add a new entry for this plugin; no other changes were made
 * [ ] The submitter included all required information in the PR description, including:
     * [ ] The plugin repo URL;
     * [ ] A brief description of the plugin's motivation and context;
-    * [ ] Acknowledgment of the Community Guidelines
+    * [ ] Acknowledgment of the Code of Conduct
 * [ ] The plugin is related to nature and/or nature's benefits to people
-* [ ] The plugin has documentation
+* [ ] The plugin has documentation and documents data needs
 * [ ] The plugin's documentation appears relevant to the plugin's description
-* [ ] The plugin's name is unique and appropriate (it adheres to the Community Guidelines)
+* [ ] The plugin's name is unique and appropriate (it adheres to the Code of Conduct)

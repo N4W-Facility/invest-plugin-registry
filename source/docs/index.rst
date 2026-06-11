@@ -8,7 +8,7 @@ Documentation
 
    installing
    submission_process
+   linting
    ai_policy
    governance
    review_rubric
-   Code of Conduct <code_of_conduct>

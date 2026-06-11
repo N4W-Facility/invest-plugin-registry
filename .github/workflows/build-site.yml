@@ -1,6 +1,9 @@
 name: "Render plugins site"
 
 on:
+    pull_request:
+        branches:
+            - main
     push:
         branches:
             - main
@@ -17,13 +20,14 @@ jobs:
               run: |
                   make all
 
-            - name: Upload static files as artifact
+            - name: Upload site as pages artifact
               id: deployment
-              uses: actions/upload-pages-artifact@v3
+              uses: actions/upload-pages-artifact@v5
               with:
                   path: html/
 
     deploy:
+        if: github.event_name == 'push'  # only deploy when pushed to main.
         environment:
             name: github-pages
             url: ${{ steps.deployment.outputs.page_url }}

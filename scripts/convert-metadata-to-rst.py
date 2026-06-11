@@ -5,18 +5,11 @@ import os
 import re
 import textwrap
 
+from utils import PLUGIN_TYPES
+
+
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
-
-
-PLUGIN_TYPES = {
-    "preprocessing": "Preprocessing",
-    "postprocessing": "Postprocessing",
-    "workflow": "Workflow",
-    "invest_model_variant": "InVEST Model Variant",
-    "new_model": "New Model",
-    "other": "Other"
-}
 
 
 def format_contact(contacts):
@@ -67,15 +60,15 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
         # only list as pypi deps those packages that are not listed in conda
         # deps
         if '\n' in condaforge_dependencies:
-            cf_pkgs = set([re.findall('^\w+', dep)[0] for dep in
+            cf_pkgs = set([re.findall('^\\w+', dep)[0] for dep in
                            cf_dependencies_list])
             pypi_dependencies_list = []
             for pypi_dep in pypi_deps_list:
-                pkg = re.findall('^\w+', pypi_dep)[0]
+                pkg = re.findall('^\\w+', pypi_dep)[0]
                 if pkg not in cf_pkgs:
                     pypi_dependencies_list.append(pypi_dep)
             pypi_dependencies = "\n".join(
-                [" "*12 + dep for dep in pypi_dependencies_list])
+                [" "*12 + dep for dep in pypi_dependencies_list]).lstrip()
         else:
             pypi_dependencies = "\n".join(
                 [" "*12 + dep for dep in pypi_deps_list]).lstrip()
@@ -109,23 +102,14 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
             authors_str = "**Authors:** " + format_contact(authors)
 
         if authors and maintainers:
-            authors_maintainers = (
-                f"""
-                | {authors_str}
-                | {maintainers_str}
-                |
-                """)
+            authors_maintainers = "".join(authors_str + "\n" +
+                                          " "*8 + f"| {maintainers_str}")
         else:
-            authors_maintainers = (
-                f"""
-                | {authors_str or maintainers_str}
-                |
-                """)
+            authors_maintainers = authors_str or maintainers_str
     else:
-        authors_maintainers = (
-            """
-            |
-            """)
+        # This shouldn't come up, because part of our linting involves checking
+        # for at least one of these keys. But just in case, let's handle the case:
+        authors_maintainers = "*No authors or maintainers listed*"
 
     # Description handling
     if plugin_metadata['description_path']:
@@ -146,28 +130,28 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
         """)
 
     # Construct the template
-    template_start = (
-        f"""
-        {project_name}
-        {'='*len(project_name)}
+    template = textwrap.dedent(f"""
+        {plugin_metadata['plugin_name']}
+        {'='*len(plugin_metadata['plugin_name'])}
 
-        .. info-card::
+        .. tags:: {all_tags}
 
-            .. grid-item::
-                :columns: 12
+        | **Source Code:** {plugin_metadata['github_repo']}
+        | **Current Version:** {plugin_metadata['version']}
+        | **Last Updated:** {plugin_metadata['date_last_updated']}
+        | **License**: {plugin_metadata['pyproject_toml']['project']['license']}
+        | {authors_maintainers}
+        | `Documentation <{docs_link}>`_ :octicon:`link-external` | `Issue Tracker <{issues_link}>`_ :octicon:`link-external`
 
-                | **Source Code:** {plugin_metadata['github_repo']}
-                | **Current Version:** {plugin_metadata['version']}
-                | **Last Updated:** {plugin_metadata['date_last_updated']}
-                |
-        """)
+        .. admonition:: Install this plugin in the InVEST Workbench
 
-    template_end = (
-        f"""
-                | `Documentation <{docs_link}>`_ :octicon:`link-external` | `Issue Tracker <{issues_link}>`_ :octicon:`link-external`
-                |
+            Copy the link below and paste it into the InVEST Workbench "Manage Plugins"
+            modal, under "Git URL." In the "Branch, tag, or commit" box, enter:
+            **{plugin_metadata['version']}**
 
-                .. tags:: {all_tags}
+            .. code::
+
+                {plugin_metadata['github_repo']}
 
         {description_partial}
 
@@ -183,8 +167,6 @@ def render_rst_file(plugin_name, plugin_metadata, out_dir):
             {condaforge_dependencies}
 
         """)
-
-    template = textwrap.dedent(template_start + authors_maintainers + template_end)
 
     out_filename = os.path.join(out_dir, f'{plugin_name}.rst')
     with open(out_filename, 'w') as out_file:

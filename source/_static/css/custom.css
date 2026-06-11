@@ -1,0 +1,27 @@
+.sd-card-header > .sd-card-text {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.sd-card-header {
+    border-radius: 0.25rem 0.25rem 0rem 0rem;
+}
+
+.sd-card-footer {
+    border-radius: 0rem 0rem 0.25rem 0.25rem ;
+}
+
+.sd-btn {
+    font-weight: bold;
+}
+
+.card-text-small {
+    font-size: 75%;
+    font-weight: bold;
+}
+
+.flex-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+}

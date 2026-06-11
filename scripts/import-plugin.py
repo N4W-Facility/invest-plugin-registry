@@ -7,6 +7,8 @@ import tomllib
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger(__name__)
 
+REQUIRED_ATTRS = ('execute', 'validate', 'MODEL_SPEC')
+
 
 def main(args=None):
     parser = argparse.ArgumentParser(os.path.basename(__file__))
@@ -24,10 +26,15 @@ def main(args=None):
         0, os.path.join(os.path.dirname(parsed_args.PYPROJECT_TOML),
                         'src'))
     import_error = None
+    missing_attributes = []
     try:
         LOGGER.info(
             f"Testing that module {project_name}.{project_name} imports")
-        _ = __import__(f'{project_name}.{project_name}')
+        module = __import__(project_name)
+        for attrname in REQUIRED_ATTRS:
+            if not hasattr(module, attrname):
+                missing_attributes.append(
+                    f" Plugin module is missing the attribute {attrname}")
     except ImportError as e:
         import_error = str(e)
 
@@ -40,6 +47,13 @@ def main(args=None):
             target_errors.write(
                 f"❌ Plugin {project_name} did not import; error was: "
                 f"{import_error}\n")
+
+        if missing_attributes:
+            for attr_msg in missing_attributes:
+                target_errors.write(f"❌ {attr_msg}")
+        else:
+            target_errors.write(
+                f"✅ Plugin {project_name} has all required attributes")
 
 
 if __name__ == '__main__':
