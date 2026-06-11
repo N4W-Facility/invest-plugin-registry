@@ -29,7 +29,7 @@ jobs:
                   # Append the PR author to the file.
                   # Using printf for compatibility; part of posix standard
                   # where echo is not.
-                  prinf "\n\nFYI @${PR_AUTHOR}\n" >> "$VALIDATION_RESULTS"
+                  printf "\n\nFYI @${PR_AUTHOR}\n" >> "$VALIDATION_RESULTS"
 
                   # debugging
                   cat "$VALIDATION_RESULTS"
