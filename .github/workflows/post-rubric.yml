@@ -13,7 +13,7 @@ jobs:
         if: ${{ github.event.issue.pull_request && github.event.comment.body == '/rubric' }}
         runs-on: ubuntu-latest
         env:
-            PR_NUMBER: ${{ github.event.number }}
+            PR_NUMBER: ${{ github.event.issue.number }}
             GH_TOKEN: ${{ github.token }}
         steps:
             - uses: actions/checkout@v6
