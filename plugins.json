@@ -8,6 +8,7 @@
   },
   {
     "repo_url": "https://github.com/natcap/ROOT.git",
+    "plugin_name": "ROOT",
     "version": "2.0.0",
     "plugin_type": "postprocessing",
     "keywords": ["optimization", "landscape planning", "restoration"]
