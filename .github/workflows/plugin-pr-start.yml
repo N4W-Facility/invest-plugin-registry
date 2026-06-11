@@ -17,7 +17,7 @@ jobs:
             PR_NUMBER: ${{ github.event.number }}
             GH_TOKEN: ${{ github.token }}
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
 
             - name: Post the reviewer checklist
               shell: bash

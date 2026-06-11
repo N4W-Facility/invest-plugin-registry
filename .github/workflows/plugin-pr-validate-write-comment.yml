@@ -23,7 +23,16 @@ jobs:
                   set -ex
                   find .
                   PR_NUM=$(cat pr-data/pr-num.txt)
+                  PR_AUTHOR=$(cat pr-data/pr-author.txt)
                   VALIDATION_RESULTS=pr-data/validation-results.md
+
+                  # Append the PR author to the file.
+                  # Using printf for compatibility; part of posix standard
+                  # where echo is not.
+                  printf "\n\nFYI @${PR_AUTHOR}\n" >> "$VALIDATION_RESULTS"
+
+                  # debugging
+                  cat "$VALIDATION_RESULTS"
 
                   # Write the validation results to the PR
                   gh pr comment \
