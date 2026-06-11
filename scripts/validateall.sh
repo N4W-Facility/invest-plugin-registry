@@ -5,23 +5,21 @@
 # For local development, messages that would be written to the PR by github
 # actions are instead printed to the shell.
 #
+# Example call of this script, passing user, reponame, branch as parameters:
+#
+#   $ ./scripts/validateall.sh natcap invest-plugin-demo main
 
+# The file to write output to.  If not provided, will write to stdout.
+FILE="$1"
+if [ -z "$FILE" ]; then
+    FILE=/dev/stdout
+else
+    rm "$FILE"
+fi
 
-# Expects $1 to be the filepath to the comment contents
+# Param 1 to the function is the file with contents to write out.
 write_comment () {
-    # -z is true if the string has length 0.
-    if [ -z "$GITHUB_ACTIONS" ];
-    then
-        set +x  # be nonexplicit
-        echo "########### SIMULATED PR COMMENT ##############"
-        cat "$1"
-        echo ""
-        echo "########### END SIMULATED PR COMMENT ##############"
-        set -x  # reenable explicitness
-    else
-        # We're in github actions, so post to the relevant PR.
-        gh pr comment "$PR_NUMBER" --body-file "$1"
-    fi
+    cat "$1" >> "$FILE"
 }
 
 # Be eXplicit about what's being run
@@ -30,11 +28,15 @@ set -x
 # Fail on first error
 set -e
 
+# We are assuming that this script is running from the main repo and within a PR
+curl -o main_plugins.json "https://raw.githubusercontent.com/natcap/invest-plugin-registry/main/plugins.json"
+cat main_plugins.json  # for debugging
+
 # Extract the new plugin information from plugins.json
 NEW_PLUGIN_DATA_FILE=new_plugin.json
 uv run --script scripts/extract-modified-json.py \
   plugins.json \
-  main \
+  main_plugins.json \
   "$NEW_PLUGIN_DATA_FILE"
 cat "$NEW_PLUGIN_DATA_FILE"
 VERSION="$(jq --raw-output .version $NEW_PLUGIN_DATA_FILE)"
@@ -74,6 +76,13 @@ then
 fi
 
 
+# check name uniqueness
+NAME_COMPARE="name_comparison.txt"
+python scripts/compare-names.py \
+    "$NEW_PLUGIN_DATA_FILE" \
+    main_plugins.json \
+    "$NAME_COMPARE"
+
 # compare versions
 VERSION_COMPARE="version_comparison.txt"
 python scripts/compare-versions.py \
@@ -85,6 +94,7 @@ python scripts/compare-versions.py \
 PLUGIN_INFO="plugin_info.md"
 python scripts/extract-plugin-info.py \
     "$LOCAL_REPO_DIR/pyproject.toml" \
+    "$NEW_PLUGIN_DATA_FILE" \
     "$PLUGIN_INFO"
 
 # Check that packages install and we can import all python files.
@@ -103,5 +113,5 @@ IMPORT_ERRORS="import-errors.txt"
 "$CONDA_ENV/bin/python" scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml" "$IMPORT_ERRORS"
 
 FINAL_FILE="final.md"
-cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$IMPORT_ERRORS" "$PLUGIN_INFO" > "$FINAL_FILE"
+cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$NAME_COMPARE" "$IMPORT_ERRORS" "$PLUGIN_INFO" > "$FINAL_FILE"
 write_comment "$FINAL_FILE"

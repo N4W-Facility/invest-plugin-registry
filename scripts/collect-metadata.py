@@ -14,9 +14,12 @@ import logging
 import os
 import re
 import shutil
+import time
 import tomllib
 
 import requests
+
+from utils import construct_base_url
 
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
@@ -25,6 +28,8 @@ DEFAULT_PLUGINS_FILE = os.path.join(REPO_ROOT, 'plugins.json')
 DEFAULT_OUTDIR = os.path.join(REPO_ROOT, 'html')
 
 DESCRIPTION_OUTDIR = os.path.join(REPO_ROOT, 'source', 'plugins', 'partials')
+CACHEDIR = os.path.join(os.path.dirname(__file__), '.cache')
+MAXCACHEAGE = 360  # seconds
 
 def _hashfile(filepath):
     sha = hashlib.sha256()
@@ -37,32 +42,74 @@ def _hashfile(filepath):
     return sha.hexdigest()
 
 
+def _hashstring(string):
+    if isinstance(string, str):
+        string = string.encode('utf-8')
+    sha = hashlib.sha256()
+    sha.update(string)
+    return sha.hexdigest()
+
+
+def _check_url_cache(url):
+    """Save JSON data to a local cache to avoid API restrictions.
+
+    If the cached results are older than ``MAXCACHEAGE`` or have not yet been
+    fetched, the cache will be refreshed with the current contents from the
+    endpoint.  See ``CACHEDIR`` for the cache location.
+
+    Args:
+        url: The URL to an API endpoint that returns json data.
+
+    Returns:
+        json_data (dict): The json data from the API endpoint.
+
+    """
+    if not os.path.isdir(CACHEDIR):
+        os.makedirs(CACHEDIR)
+
+    url_hash = _hashstring(url)
+    cache_file = os.path.join(CACHEDIR, f'{url_hash}.json')
+
+    try:
+        # Guard against invalid writes (probably from debugging)
+        if os.path.getsize(cache_file) == 0:
+            os.remove(cache_file)
+    except FileNotFoundError:
+        pass
+
+    if (not os.path.exists(cache_file)
+            or (time.time() - os.path.getmtime(cache_file)) > MAXCACHEAGE):
+        resp = requests.get(url)
+        resp.raise_for_status()
+        json_data = resp.json()
+        with open(cache_file, 'w') as cache_json:
+            json.dump(json_data, cache_json)
+        LOGGER.info(f"Saved API data to cache: {url}")
+    else:
+        with open(cache_file, 'r') as cache_json:
+            try:
+                json_data = json.load(cache_json)
+            except Exception:
+                cache_json.seek(0)
+                print(cache_json.read())
+                raise
+        LOGGER.info(f"Loaded API data from cache: {url}")
+    return json_data
+
+
 def _version_info(host, org, repo, version):
     if 'github.com' in host:
-        resp = requests.get(
+        tag_json = _check_url_cache(
             f'https://api.github.com/repos/{org}/{repo}/git/refs/tags/{version}')
-        tag_json = resp.json()
-        resp = requests.get(tag_json['object']['url'])
-        version_json = resp.json()
+        version_json = _check_url_cache(tag_json['object']['url'])
         sha = version_json['sha']
         date = version_json['author']['date']
     else:
-        resp = requests.get(
+        tag_json = _check_url_cache(
             f'https://{host}/api/v4/projects/{org}%2F{repo}/repository/tags/{version}')
-        tag_json = resp.json()
         sha = tag_json['commit']['id']
         date = tag_json['created_at']
     return sha, date
-
-
-def _construct_url(host, org, repo, version):
-    if 'github.com' in host:
-        base_api_url = f"https://raw.githubusercontent.com/{org}/{repo}/refs/tags/{version}/FILENAME"
-
-    else:
-        base_api_url = f"https://{host}/api/v4/projects/{org}%2F{repo}/repository/files/FILENAME/raw?ref={version}"
-
-    return base_api_url
 
 
 def main(args=None):
@@ -91,7 +138,7 @@ def main(args=None):
 
         _, _, host, org, repo = re.sub(r'\.git$', '', plugin_git_url).split('/')
 
-        base_url = _construct_url(host, org, repo, plugin_version)
+        base_url = construct_base_url(plugin_git_url, plugin_version)
 
         pyproject_url = base_url.replace('FILENAME', 'pyproject.toml')
         LOGGER.debug(f"Getting toml {pyproject_url}")
@@ -127,7 +174,8 @@ def main(args=None):
             'date_last_updated': tag_date,
             'plugin_type': plugin['plugin_type'],
             'keywords': plugin['keywords'],
-            'description_path': description_partial
+            'description_path': description_partial,
+            'plugin_name': plugin['plugin_name']
         }
 
     metadata_object = {

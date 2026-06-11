@@ -19,7 +19,8 @@ install it from the InVEST Workbench.
 Contribution Policy
 -------------------
 
-The maintainers of the ``invest-plugin-registry`` repository will generally accept
+The maintainers of the ``invest-plugin-registry``
+`repository <https://github.com/natcap/invest-plugin-registry/>`_ will generally accept
 all contributed plugins. Community-contributed plugins are **not** reviewed for quality
 or accuracy. The purpose of this list is simply to facilitate plugin sharing and
 discovery. The inclusion of a plugin in this list does not guarantee anything about
@@ -38,8 +39,9 @@ Security Policy
 The inclusion of a plugin in the InVEST plugins registry does not imply or guarantee
 anything about the plugin's quality, suitability, or security, and the Natural Capital
 Alliance reserves the right to remove any plugin from the registry that is believed to be
-a security risk. If you believe a plugin poses a security risk, please see
-<LINK TO THIS FILE> for instructions.
+a security risk. If you believe a plugin poses a security risk, please go to the
+`Security and Quality tab <https://github.com/natcap/invest-plugin-registry/security>`_
+of the Registry GitHub Repo and use the "Report a vulnerability" button to file a report.
 
 ----
 
@@ -84,7 +86,11 @@ The following keys are required for inclusion in the community plugin registry:
   * ``name``: The name of your project.
   * ``authors`` and/or ``maintainers``: You only need to include one of these, but if
     the authors and maintainer of the plugin differ, you may include both.
-  * ``description``: A brief description of your plugin.
+  * ``description``: A brief description of your plugin. This will be used on the index page
+    listing all plugins. It ought to be short (only the first 300 characters will be displayed)
+    but descriptive enough to give someone an idea of what your plugin does. This description
+    will also be used on your plugin's detail page unless you provide a separate
+    ``registry_description`` (see below, in the ``[tool.natcap.invest]`` section).
   * ``readme``: This is a longer description of your plugin. Typically, a project will
     have a ``README.md`` or ``README.rst`` file and you should put that file name here.
   * ``license``: This is an `SPDX license <https://packaging.python.org/en/latest/glossary/#term-License-Expression>`_ expression consisting of one or more `license identifiers <https://packaging.python.org/en/latest/glossary/#term-License-Identifier>`_.
@@ -98,7 +104,7 @@ The following keys are required for inclusion in the community plugin registry:
   * ``Issues``: The link to your preferred issue tracker. This could be the repo's Issues
     page, or it could be something else. Many users of InVEST often look to the
     `NatCap Forum <https://community.naturalcapitalalliance.org/latest>`_ for help, so if
-    you'd like to engage with users of your plugin on the Forum, that's also an option! 
+    you'd like to engage with users of your plugin on the Forum, that's also an option!
   * ``Documentation``: The link to your plugin documentation. It's fine if this URL points
     to your README.
 
@@ -133,12 +139,24 @@ with your plugin, as well as any funding source(s) that contributed to its creat
 
 .. _host_plugin:
 
-Step 1: Make your plugin available on GitHub or GitLab
+Step 0: Make your plugin available on GitHub or GitLab
 ------------------------------------------------------
 
 In order for your plugin to be included in the registry, the source code needs to be
 hosted publicly on GitHub or GitLab. If you're unfamiliar with GitHub, refer to the
 GitHub docs for how to `create a new repository <https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository>`_.
+
+----
+
+.. _lint_your_plugin_in_browser:
+
+Step 1: Test your pyproject.toml with the browser-based linter
+--------------------------------------------------------------
+
+The Registry site includes a :doc:`browser-based validation tool <linting>` that runs the
+same validation script against your ``pyproject.toml`` as will run in an open pull request.
+Using this tool to double-check your ``pyproject.toml`` before proceeding with the submission
+process can help reduce the need for iteration later.
 
 ----
 
@@ -153,7 +171,7 @@ release may differ slightly. Please refer to the guide for your repo host:
 * `GitHub documentation <https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release>`_
 * `GitLab documentation <https://docs.gitlab.com/user/project/releases/#create-a-release-in-the-releases-page>`_
 
-For the Tag, we require that you follow the `semantic versioning <https://semver.org/>`_
+For the Tag, you are required to follow the `semantic versioning <https://semver.org/>`_
 specification, e.g. 1.0.0 for an initial release. Only versions with the format ``x.y.z``
 are supported; do not prefix your version with ``v``.
 
@@ -166,12 +184,14 @@ Step 3: Fork the ``invest-plugin-registry`` repo and edit ``plugins.json``
 In this step, you will make the edits to the community plugin list that are needed for
 the inclusion of your plugin.
 
-To get set up, first `fork <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`_ the ``invest-plugin-registry`` repo on GitHub
+To get set up, first `fork <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`_ the ``invest-plugin-registry``
+`repo on GitHub <https://github.com/natcap/invest-plugin-registry/>`_.
 
 On your fork, add a new entry at the bottom of the ``plugins.json`` file: ::
 
     {
          "repo_url": "https://github.com/natcap/invest-routedem-tfa-range.git",
+         "plugin_name": "RouteDEM with TFA Range",
          "version": "1.0.0",
          "plugin_type": "invest_model_variant",
          "keywords": ["RouteDEM", "hydrology", "streams", "routing"]
@@ -179,6 +199,13 @@ On your fork, add a new entry at the bottom of the ``plugins.json`` file: ::
 
 * Remember to add a comma after the closing curly bracket, ``}``, of the previous entry!
 * ``repo_url`` should be the ``https`` URL of your repository.
+* ``plugin_name`` should be the display name you want to use for your plugin on the
+  Registry. This value must be unique in the Community Plugins list.
+
+  * **NOTE**: It's strongly recommended to use the same name for ``plugin_name`` that
+    you used for the ``model_title`` attribute in your ``MODEL_SPEC``, since the
+    ``model_title`` is what will be displayed in the Workbench.
+
 * For ``version``, use the tag associated with your release from
   :ref:`Step 2 <create_release>`. Remember that semantic versioning is required; this
   version should match the format ``x.y.z``.
@@ -264,12 +291,12 @@ Specifically, they will evaluate based on the following questions:
 * Does the plugin have documentation? Does the documentation look relevant to the plugin's
   description?
 * Is the plugin's name unique and appropriate? Does it adhere to the
-  `Community Guidelines <code_of_conduct>`_? (It's generally recommended to give your
+  :doc:`Code of Conduct <code_of_conduct>`? (It's generally recommended to give your
   plugin a name that's related to what it does. Don't call your plugin "banana" unless
   it's modeling something about bananas!)
 
 If you would like to view the exact rubric the reviewers use, you may do so
-:ref:`here <review_rubric>`.
+:doc:`here <review_rubric>`.
 
 ----
 

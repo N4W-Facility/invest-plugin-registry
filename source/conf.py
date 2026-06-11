@@ -15,8 +15,8 @@ author = 'The Natural Capital Alliance'
 
 extensions = [
     "sphinx_design",
-    "sphinx_design_elements",
     "sphinx_tags",
+    "sphinx_copybutton",
     "myst_parser",
 ]
 
@@ -26,7 +26,7 @@ source_suffix = {
 }
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'jinja']
 
 
 # -- Sphinx Tags Config ------------------------------------------------------
@@ -62,13 +62,22 @@ html_theme_options = {
         'color-brand-content': '#2e2d29',
         'color-link': '#009ab4',
         'color-announcement-background': '#007c92',
+        'sd-color-card-border-hover': '#007c92',
+        'sd-color-secondary': '#2D716F',
+        'sd-color-secondary-highlight': '#014240',
     },
     'dark_css_variables': {
         'color-brand-primary': '#B6B1A9',
         'color-brand-content': '#F4F4F4',
         'color-link': '#009ab4',
         'color-announcement-background': '#620059',
+        'sd-color-card-border-hover': '#620059',
+        'sd-color-secondary': '#734675',
+        'sd-color-secondary-highlight': '#620059',
     },
     'sidebar_hide_name': True,  # don't show name in sidebar, only logo
     'announcement': '<em>Hey, check out the <a href="https://naturalcapitalalliance.stanford.edu/node/4746">NatCap Symposium!</a></em>',
 }
+html_css_files = [
+    'css/custom.css'
+]
