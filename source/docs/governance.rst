@@ -10,7 +10,7 @@ Alliance (NatCap) Community Plugin Registry.
 Plugin review is conducted by a Reviewer Pool, which is comprised of volunteers from
 Natural Capital Alliance member organizations. Reviewer Pool members have the authority
 to approve or reject plugin submissions for inclusion in the Community Registry based on
-the criteria outlined in the :doc:`Plugin Review Rubric <review_rubric>`. Any reviewer in
+the criteria outlined in the :doc:`Plugin Review Rubric <review_process>`. Any reviewer in
 the Reviewer Pool can review and approve a plugin submission.
 
 The Community Plugin Registry is maintained by the Natural Capital Alliance Stanford

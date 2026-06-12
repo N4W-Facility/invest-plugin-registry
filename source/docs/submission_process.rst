@@ -296,7 +296,7 @@ Specifically, they will evaluate based on the following questions:
   it's modeling something about bananas!)
 
 If you would like to view the exact rubric the reviewers use, you may do so
-:doc:`here <review_rubric>`.
+:doc:`here <review_process>`.
 
 ----
 
@@ -305,7 +305,7 @@ If you would like to view the exact rubric the reviewers use, you may do so
 Step 5: Address any review comments
 -----------------------------------
 
-If your plugin fails review for any reason, the reviewer will add a comment to the PR
+If your plugin fails review for any reason, the reviewer will leave a review on the PR
 tagging you and explaining why the plugin failed to meet the criteria. Please address
 any required changes and update the GitHub release with those changes. Leave a comment
 on the PR to let the reviewer know you've addressed the feedback. Don't open a new PR.

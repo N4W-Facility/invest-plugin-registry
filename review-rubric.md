@@ -1,8 +1,6 @@
 ## Thank you for your plugin request!
 
-A reviewer will take a look using the checklist below, and you can find more
-information about the [review process
-here](https://natcap.github.io/invest-plugin-registry/docs/submission_process.html#step-4-submit-a-pull-request-for-review), and more about the [registry's governance here](https://natcap.github.io/invest-plugin-registry/docs/governance.html).
+A reviewer will take a look using the checklist below, and you can find more information about the [review process here](https://natcap.github.io/invest-plugin-registry/docs/submission_process.html#step-4-submit-a-pull-request-for-review), and more about the [registry's governance here](https://natcap.github.io/invest-plugin-registry/docs/governance.html).
 
 ## Dear Reviewer,
 
@@ -17,3 +15,5 @@ Please review the plugin submission pull request based on the following criteria
 * [ ] The plugin has documentation and documents data needs
 * [ ] The plugin's documentation appears relevant to the plugin's description
 * [ ] The plugin's name is unique and appropriate (it adheres to the Code of Conduct)
+
+For detailed instructions on submitting a review, please reference the [Review Process docs](https://natcap.github.io/invest-plugin-registry/docs/review_process.html).
