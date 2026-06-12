@@ -112,6 +112,26 @@ conda env create -p "./$CONDA_ENV" --file="$ENV_FILENAME"
 IMPORT_ERRORS="import-errors.txt"
 "$CONDA_ENV/bin/python" scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml" "$IMPORT_ERRORS"
 
+# Report any critical source code vulnerabilities detected by bandit
+# https://bandit.readthedocs.io/en/latest/index.html
+# NOTE: this doesn't address supply chain vulnerabilities, only the plugin source code.
+BANDIT_TMP="bandit-tmp.txt"
+BANDIT_REPORT="bandit-report.txt"
+if [ -e "$BANDIT_REPORT" ]
+then
+    rm "$BANDIT_REPORT"
+fi
+
+if uvx bandit --recursive --ignore-nosec --severity-level=medium "$LOCAL_REPO_DIR" > "$BANDIT_TMP"
+then
+    printf "\nℹ️  No medium or high security vulnerabilities found in the plugin repo\n" >> "$BANDIT_REPORT"
+else
+    printf "\n❌ Security issues need to be addressed in the plugin repo (see collapsed report below)\n" >> "$BANDIT_REPORT"
+fi
+printf "\n<details>\n<summary>Bandit Security Report (medium and high severity)</summary>" >> "$BANDIT_REPORT"
+cat "$BANDIT_TMP" >> "$BANDIT_REPORT"
+printf "\n</details>" >> "$BANDIT_REPORT"
+
 FINAL_FILE="final.md"
-cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$NAME_COMPARE" "$IMPORT_ERRORS" "$PLUGIN_INFO" > "$FINAL_FILE"
+cat "$LINT_RESULTS_FILE" "$VERSION_COMPARE" "$NAME_COMPARE" "$IMPORT_ERRORS" "$BANDIT_REPORT" "$PLUGIN_INFO" > "$FINAL_FILE"
 write_comment "$FINAL_FILE"
