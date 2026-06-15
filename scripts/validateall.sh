@@ -107,10 +107,14 @@ then
     rm -rf "$CONDA_ENV"
 fi
 python scripts/build-env-yaml.py "$LOCAL_REPO_DIR/pyproject.toml" "$ENV_FILENAME"
-conda env create -p "./$CONDA_ENV" --file="$ENV_FILENAME"
-
 IMPORT_ERRORS="import-errors.txt"
-"$CONDA_ENV/bin/python" scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml" "$IMPORT_ERRORS"
+if conda env create -p "./$CONDA_ENV" --file="$ENV_FILENAME"
+then
+    # only do the import test if the env creation worked.
+    "$CONDA_ENV/bin/python" scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml" "$IMPORT_ERRORS"
+else
+    printf "❌ Error when building the conda environment so imports could not be checked. See the actions logs for details." > "$IMPORT_ERRORS"
+fi
 
 # Report any critical source code vulnerabilities detected by bandit
 # https://bandit.readthedocs.io/en/latest/index.html
