@@ -14,16 +14,13 @@ jobs:
         runs-on: ubuntu-latest
         env:
             PR_NUMBER: ${{ github.event.issue.number }}
-            GH_TOKEN: ${{ github.token }}
+            GH_TOKEN: ${{ secrets.PLUGIN_PR_WORKFLOW }}
+            GH_REPO: ${{ github.repository }}
         steps:
             - name: Close PR
               run: |
-                  gh pr close \
-                        "$PR_NUM" \
-                        --repo ${{ github.repository }}
-            
+                  gh pr close "$PR_NUMBER"
+
             - name: Re-open PR
               run: |
-                  gh pr reopen \
-                        "$PR_NUM" \
-                        --repo ${{ github.repository }}
+                  gh pr reopen "$PR_NUMBER"
