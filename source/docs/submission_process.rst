@@ -84,8 +84,24 @@ The following keys are required for inclusion in the community plugin registry:
 * In the ``[project]`` section:
 
   * ``name``: The name of your project.
+  * ``version``: Your ``pyproject.toml`` must include a ``version``. If you aren't using
+    ``setuptools_scm`` to
+    `derive the version dynamically <https://setuptools-scm.readthedocs.io/en/latest/usage/>`_,
+    the version listed must match the version you will use when creating a Tag in
+    :ref:`Step 2 <create_release>`.
   * ``authors`` and/or ``maintainers``: You only need to include one of these, but if
-    the authors and maintainer of the plugin differ, you may include both.
+    the authors and maintainer of the plugin differ, you may include both. Both of these
+    fields contain lists of people identified by a name and/or an email address. Please format
+    them as described in the `Python Packaging User Guide <https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#authors-maintainers>`_, e.g.
+
+    .. code-block:: toml
+
+        authors = [
+          {name = "Person 1", email = "email1@example.com"},
+          {name = "Person 2"},
+          {email = "email3@example.com"},
+        ]
+
   * ``description``: A brief description of your plugin. This will be used on the index page
     listing all plugins. It ought to be short (only the first 300 characters will be displayed)
     but descriptive enough to give someone an idea of what your plugin does. This description
@@ -175,6 +191,12 @@ For the Tag, you are required to follow the `semantic versioning <https://semver
 specification, e.g. 1.0.0 for an initial release. Only versions with the format ``x.y.z``
 are supported; do not prefix your version with ``v``.
 
+.. important::
+
+    The version used for the Tag must match the ``version`` in your ``pyprojec.toml``
+    (unless you are using ``setuptools_scm`` to
+    `derive the version dynamically <https://setuptools-scm.readthedocs.io/en/latest/usage/>`_).
+
 ----
 
 .. _fork_and_edit:
@@ -187,7 +209,9 @@ the inclusion of your plugin.
 To get set up, first `fork <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`_ the ``invest-plugin-registry``
 `repo on GitHub <https://github.com/natcap/invest-plugin-registry/>`_.
 
-On your fork, add a new entry at the bottom of the ``plugins.json`` file: ::
+On your fork, add a new entry at the bottom of the ``plugins.json`` file:
+
+.. code-block:: json
 
     {
          "repo_url": "https://github.com/natcap/invest-routedem-tfa-range.git",
@@ -244,6 +268,10 @@ On your fork, add a new entry at the bottom of the ``plugins.json`` file: ::
 Step 4: Submit a pull request for review
 ----------------------------------------
 
+Open a pull request to merge the branch on your fork of ``invest-plugin-registry`` where you
+edited ``plugins.json`` into the ``main`` branch of ``natcap/invest-plugin-registry``. For
+more detailed instructions on how to do so, please reference the `GitHub documentation <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork>`_.
+
 When you open a pull request, a template is provided to help ensure you're providing all of
 the information about your plugin that is needed for review and inclusion in the registry.
 Most of the required information will be automatically pulled from your ``pyproject.toml``;
@@ -272,6 +300,16 @@ If any of these tests fail, the bot will add a comment to the PR tagging you and
 a message explaining what went wrong. At this stage, if you have questions about how to fix
 the problem(s), you can request help from someone on the maintainer team; please leave a
 comment on the PR tagging ``@natcap/software-team`` and they will do their best to assist.
+
+Once you have addressed the failures, you can re-trigger the tests by leaving a comment on
+the PR that says ``/run-validation``, as shown in the screenshot below.
+
+.. image:: /_static/run-validation.png
+   :alt: A screenshot of a GitHub PR comment that says "/run-validation"
+   :height: 150px
+
+This will trigger an action that closes and re-opens the PR, causing tests to run again.
+You can also manually close and then re-open the PR.
 
 Once tests pass:
 ^^^^^^^^^^^^^^^^
@@ -308,7 +346,8 @@ Step 5: Address any review comments
 If your plugin fails review for any reason, the reviewer will leave a review on the PR
 tagging you and explaining why the plugin failed to meet the criteria. Please address
 any required changes and update the GitHub release with those changes. Leave a comment
-on the PR to let the reviewer know you've addressed the feedback. Don't open a new PR.
+on the PR tagging your reviewer to let them know you've addressed the feedback. Don't
+open a new PR.
 
 Once your plugin passes review, the reviewer will merge the PR and your plugin will be
 available for other users to discover and install from the registry!
