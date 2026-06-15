@@ -108,7 +108,7 @@ then
 fi
 python scripts/build-env-yaml.py "$LOCAL_REPO_DIR/pyproject.toml" "$ENV_FILENAME"
 IMPORT_ERRORS="import-errors.txt"
-if conda env create -p "./$CONDA_ENV" --file="$ENV_FILENAME"
+if (conda env create -p "./$CONDA_ENV" --file="$ENV_FILENAME" && "./$CONDA_ENV/bin/pip" install --no-build-isolation "./$LOCAL_REPO_DIR")
 then
     # only do the import test if the env creation worked.
     "$CONDA_ENV/bin/python" scripts/import-plugin.py "$LOCAL_REPO_DIR/pyproject.toml" "$IMPORT_ERRORS"
