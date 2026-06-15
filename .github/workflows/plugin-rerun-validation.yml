@@ -1,0 +1,29 @@
+name: "Rerun validation"
+
+on:
+    issue_comment:
+        types: [created]
+
+permissions:
+    contents: read
+    pull-requests: write
+
+jobs:
+    plugin-rerun-validation:
+        if: ${{ github.event.issue.pull_request && github.event.comment.body == '/run-validation' }}
+        runs-on: ubuntu-latest
+        env:
+            PR_NUMBER: ${{ github.event.issue.number }}
+            GH_TOKEN: ${{ github.token }}
+        steps:
+            - name: Close PR
+              run: |
+                  gh pr close \
+                        "$PR_NUM" \
+                        --repo ${{ github.repository }}
+            
+            - name: Re-open PR
+              run: |
+                  gh pr reopen \
+                        "$PR_NUM" \
+                        --repo ${{ github.repository }}
