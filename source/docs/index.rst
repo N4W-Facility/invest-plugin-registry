@@ -11,4 +11,4 @@ Documentation
    linting
    ai_policy
    governance
-   review_rubric
+   review_process
