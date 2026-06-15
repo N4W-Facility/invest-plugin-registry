@@ -76,7 +76,7 @@ html_theme_options = {
         'sd-color-secondary-highlight': '#620059',
     },
     'sidebar_hide_name': True,  # don't show name in sidebar, only logo
-    'announcement': '<em>Hey, check out the <a href="https://naturalcapitalalliance.stanford.edu/node/4746">NatCap Symposium!</a></em>',
+    'announcement': '',
 }
 html_css_files = [
     'css/custom.css'
