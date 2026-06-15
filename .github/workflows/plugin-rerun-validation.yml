@@ -14,6 +14,10 @@ jobs:
         runs-on: ubuntu-latest
         env:
             PR_NUMBER: ${{ github.event.issue.number }}
+            # GH_TOKEN must be a PAT. Using github.token results in the workflow
+            # being triggered by a bot, and bots cannot run workflows without a
+            # maintainer granting permission every time.
+            # Required permissions: actions:write, pull_requests:write
             GH_TOKEN: ${{ secrets.PLUGIN_PR_WORKFLOW }}
             GH_REPO: ${{ github.repository }}
         steps:
