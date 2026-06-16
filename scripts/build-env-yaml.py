@@ -11,8 +11,6 @@ channels:
 dependencies:
 - pip
 {condadeps}
-- pip:
-{pipdeps}
 """
 
 def main(args=None):
@@ -27,13 +25,11 @@ def main(args=None):
 
     condadeps = '\n'.join([f'- {name}' for name in
             tomldata['tool']['natcap']['invest']['conda_dependencies']])
-    pipdeps = '\n'.join(
-        [f'  - {name}' for name in tomldata['project']['dependencies']])
     with open(parsed_args.TARGET_YML, 'w') as target_yml:
         target_yml.write(
             YML_FILE.format(
                 condadeps=condadeps,
-                pipdeps=pipdeps))
+            ))
 
 
 if __name__ == '__main__':
