@@ -47,8 +47,8 @@ As a part of the plugin review process, each proposed plugin addition to the reg
 be scanned with ``bandit`` (`docs <https://bandit.readthedocs.io/en/latest/>`_) to identify
 any known vulnerabilities in the plugin's source code.  Any issues identified
 by ``bandit`` with severity ``medium`` or higher must be addressed before the
-plugin is added to the registry.  We encourage all plugin developers to integrate
-regular ``bandit`` checks into your development workflows.
+plugin is added to the registry.  All plugin developers are encouraged to integrate
+regular ``bandit`` checks into their development workflows.
 
 ----
 
