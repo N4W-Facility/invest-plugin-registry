@@ -62,6 +62,7 @@ jobs:
                         [[ "$VALIDATION_EXITED_NONZERO" = "failure" ]])
                   then
                       printf "failed" > pr-data/validation-status.txt
+                      exit 1  # fail the action!  The downstream actions should still run.
                   else
                       printf "passed" > pr-data/validation-status.txt
                   fi

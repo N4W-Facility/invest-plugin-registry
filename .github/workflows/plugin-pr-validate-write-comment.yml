@@ -3,7 +3,7 @@ name: "Write PR comment with validation results"
 on:
     workflow_run:
         workflows: ["Validate new plugin"]
-        types: [completed]
+        types: [completed]  # Runs regardless of completion status; status can be checked from the event context.
 
 jobs:
     write-pr-comment-with-validation-results:
