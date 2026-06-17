@@ -1,9 +1,13 @@
-InVEST :sup:`®` Community Plugin Registry
-=========================================
+InVEST\ :sup:`®` Plugin Registry
+================================
 
-Welcome to the Community Plugin Registry! Here you can discover plugins for the Integrated
-Valuation of Ecosystem Services and Tradeoffs (InVEST) software. For more information,
-please see the `feature announcement <https://naturalcapitalalliance.stanford.edu/news/new-feature-opens-door-custom-models-mapping-and-valuing-natures-benefits>`_.
+Welcome to the InVEST Plugin Registry! Here you can discover community-contributed plugins
+for the Integrated Valuation of Ecosystem Services and Tradeoffs (InVEST) software. The
+goal of the Plugin Registry is to make it easy for members of the InVEST community to both
+share the plugins they have created and discover plugins created by others.
+
+Check out the `feature announcement <https://naturalcapitalalliance.stanford.edu/news/new-feature-opens-door-custom-models-mapping-and-valuing-natures-benefits>`_
+to learn more about the inspiration and motivation behind adding plugin support to InVEST.
 
 ----
 
@@ -91,6 +95,13 @@ plugin API requires attention to many details that are easily overlooked when
 writing a basic script. Going through the process of developing a model into a
 plugin will help to catch bugs and identify assumptions that may exist in your
 math or your code.
+
+Have a question? Want to learn more?
+------------------------------------
+
+Reach out to us on the
+`NatCap Community Forum <https://community.naturalcapitalalliance.org>`_. The InVEST Plugin
+Registry is meant to be a community-led effort; we'd love to hear from you!
 
 Are you a Bot?
 --------------
