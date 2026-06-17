@@ -12,7 +12,7 @@ install it from the InVEST Workbench.
 .. note::
    If you have already submitted a version of your plugin for inclusion in the
    registry and want to update the version the registry tracks, jump to
-   :ref:`updating_version`.
+   :ref:`Updating your plugin version <updating_version>`.
 
 .. _contributing:
 
@@ -363,19 +363,15 @@ available for other users to discover and install from the registry!
 
 .. _updating_version:
 
-Updating your plugin version
-----------------------------
+Coming Soon: Updating your plugin version
+-----------------------------------------
 
-If you want to update the version of your plugin that is tracked in the community
-list, please do the following:
+.. admonition:: In Development
+    :class: in-progress
 
-* Create a new release following the instructions in :ref:`create_release`.
-* On your fork of the ``invest-plugin-registry`` repository, find your entry in
-  ``plugins.json`` and update the version to match your new release.
-* Submit a PR using the provided template
-* The same automated checks described in :ref:`Step 4: Submit a PR <submit_pr>` will run.
+    The process for updating a plugin version is still in active development. Once the
+    process has been finalized, this documentation will be updated.
 
-  * If any of the tests fail, you will be notified of the failure and prompted to address
-    the error(s).
-  * Once these tests pass, the PR will be automatically merged; no further action is
-    required!
+If your plugin is already included in the Registry and you would like to update the version,
+please `open an Issue <https://github.com/natcap/invest-plugin-registry/issues/new>`_ in the
+Registry's GitHub Repo and the maintainer team will work with you.
