@@ -13,4 +13,11 @@
     "plugin_type": "postprocessing",
     "keywords": ["optimization", "landscape planning", "restoration"]
   }
+    {
+    "repo_url": "https://github.com/N4W-Facility/Invest_Plugin_Calibration.git",
+    "plugin_name": "InVEST Calibration Assistant",
+    "version": "1.0.0",
+    "plugin_type": "workflow",
+    "keywords": ["calibration", "AWY", "SWY", "NDR"]
+  }
 ]
