@@ -363,8 +363,8 @@ available for other users to discover and install from the registry!
 
 .. _updating_version:
 
-Coming Soon: Updating your plugin version
------------------------------------------
+Updating your plugin version
+----------------------------
 
 .. admonition:: In Development
     :class: in-progress
@@ -374,4 +374,4 @@ Coming Soon: Updating your plugin version
 
 If your plugin is already included in the Registry and you would like to update the version,
 please `open an Issue <https://github.com/natcap/invest-plugin-registry/issues/new>`_ in the
-Registry's GitHub Repo and the maintainer team will work with you.
+Registry's GitHub Repo and the maintainer team will work with you to do so.
