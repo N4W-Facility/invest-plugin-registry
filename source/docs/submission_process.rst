@@ -43,6 +43,13 @@ a security risk. If you believe a plugin poses a security risk, please go to the
 `Security and Quality tab <https://github.com/natcap/invest-plugin-registry/security>`_
 of the Registry GitHub Repo and use the "Report a vulnerability" button to file a report.
 
+As a part of the plugin review process, each proposed plugin addition to the registry will
+be scanned with ``bandit`` (`docs <https://bandit.readthedocs.io/en/latest/>`_) to identify
+any known vulnerabilities in the plugin's source code.  Any issues identified
+by ``bandit`` with severity ``medium`` or higher must be addressed before the
+plugin is added to the registry.  All plugin developers are encouraged to integrate
+regular ``bandit`` checks into their development workflows.
+
 ----
 
 Prerequisites
